@@ -1,0 +1,5626 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StockPro</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: #f0f2f5;
+    color: #2c3e50;
+}
+
+/* SIDEBAR */
+
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 220px;
+    height: 100vh;
+    background: #ffffff;
+    border-right: 1px solid #e4e8f0;
+    padding: 15px 10px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+}
+
+.logo {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 25px;
+    padding-left: 10px;
+    color: #2b3a4a;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.logo span {
+    color: #3b82f6;
+}
+
+.menu {
+    flex: 1;
+}
+
+.menu button {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 4px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: #5a6a85;
+    text-align: left;
+    cursor: pointer;
+    font-size: 13.5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    white-space: nowrap;
+}
+
+.menu button:hover {
+    background: #f4f6f9;
+    color: #1e293b;
+}
+
+.menu button.active {
+    background: #eef2ff;
+    color: #3b82f6;
+    font-weight: 600;
+}
+
+.sidebar-bottom {
+    border-top: 1px solid #edf2f7;
+    padding-top: 10px;
+}
+
+.sidebar-bottom button {
+    width: 100%;
+    padding: 9px;
+    margin-top: 6px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background: white;
+    color: #64748b;
+    font-size: 12.5px;
+    cursor: pointer;
+    text-align: left;
+    white-space: nowrap;
+}
+
+/* MAIN */
+
+.main {
+    margin-left: 220px;
+    padding: 20px 30px;
+    transition: all 0.3s ease;
+}
+
+.top-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    border: 1px solid #e4e8f0;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.top-header h1 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.warehouse-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 19px;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.warehouse-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.user-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    background: #f1f5f9;
+    padding: 5px 12px;
+    border-radius: 20px;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #22c55e;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.section {
+    display: none;
+}
+
+.section.active {
+    display: block;
+}
+
+.panel {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    border: 1px solid #e4e8f0;
+    margin-bottom: 20px;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* CARDS */
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.extension-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.card-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.avatar-blue {
+    background: #60a5fa;
+}
+
+.card-name {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.card-ref {
+    font-size: 12px;
+    color: #94a3b8;
+    margin-left: 5px;
+}
+
+.action-icon {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    padding: 6px;
+}
+
+/* STATS */
+
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.stat-box {
+    background: white;
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid #e4e8f0;
+}
+
+.stat-box div {
+    font-size: 13px;
+    color: #64748b;
+}
+
+.stat-box h2 {
+    margin-top: 6px;
+}
+
+/* BUTTONS */
+
+.btn {
+    border: none;
+    padding: 9px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.btn-primary {
+    background: #3b82f6;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #2563eb;
+}
+
+.btn-secondary {
+    background: #e2e8f0;
+    color: #334155;
+}
+
+.btn-danger {
+    background: #ef4444;
+    color: white;
+}
+
+/* SEARCH */
+
+.search-bar {
+    width: 250px;
+    max-width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+/* FILTERS */
+
+.filters-container {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
+
+.filter-select,
+.filter-input {
+    padding: 8px 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 13px;
+    background: white;
+}
+
+/* TABLE */
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 500px;
+}
+
+th,
+td {
+    padding: 10px;
+    border-bottom: 1px solid #e2e8f0;
+    text-align: left;
+    font-size: 13px;
+}
+
+th {
+    background: #f8fafc;
+    color: #475569;
+    font-weight: 600;
+}
+
+tr:hover td {
+    background: #fafafa;
+}
+
+/* JOURNAL */
+
+.journal-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.journal-stat {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 7px;
+    padding: 13px;
+}
+
+.journal-stat-title {
+    font-size: 12px;
+    color: #64748b;
+}
+
+.journal-stat-value {
+    margin-top: 5px;
+    font-size: 19px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.action-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.action-ajout {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.action-modification {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.action-suppression {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.action-stock {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+.action-systeme {
+    background: #e0e7ff;
+    color: #4338ca;
+}
+
+/* MODALS */
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.4);
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 15px;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.form-group {
+    margin-bottom: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.form-group label {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group select {
+    padding: 8px;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+}
+
+/* SALE MULTI PRODUCTS */
+
+.sale-items-box {
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 10px;
+    background: #f8fafc;
+}
+
+.sale-item {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 8px;
+}
+
+.sale-item:last-child {
+    margin-bottom: 0;
+}
+
+.sale-item-grid {
+    display: grid;
+    grid-template-columns: 1fr 80px 100px 35px;
+    gap: 7px;
+    align-items: center;
+}
+
+.sale-item select,
+.sale-item input {
+    width: 100%;
+    padding: 7px;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.sale-total {
+    padding: 12px;
+    background: #eff6ff;
+    border-radius: 6px;
+    text-align: right;
+    font-weight: 600;
+    color: #1d4ed8;
+}
+
+/* INVOICE */
+
+.invoice-box {
+    background: #fff;
+    padding: 20px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+}
+
+.invoice-header {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 2px solid #3b82f6;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.invoice-details {
+    margin-bottom: 15px;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.invoice-table {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.invoice-table th {
+    background: #f8fafc;
+}
+
+.invoice-total {
+    text-align: right;
+    font-size: 15px;
+    font-weight: bold;
+    color: #1e293b;
+    margin-top: 10px;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 1024px) {
+
+    .cards-grid,
+    .stats-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
+
+@media (max-width: 768px) {
+
+    .sidebar {
+        width: 65px;
+        padding: 10px 5px;
+    }
+
+    .logo span,
+    .menu button span,
+    .sidebar-bottom button span {
+        display: none;
+    }
+
+    .logo .warehouse-logo {
+        width: 32px;
+        height: 32px;
+        font-size: 15px;
+    }
+
+    .menu button,
+    .sidebar-bottom button {
+        justify-content: center;
+        padding: 12px;
+    }
+
+    .main {
+        margin-left: 65px;
+        padding: 15px 10px;
+    }
+
+    .cards-grid,
+    .stats-row,
+    .journal-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .search-bar {
+        width: 100%;
+    }
+
+    .panel-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .panel-header button {
+        width: 100%;
+    }
+
+    .sale-item-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+/* PRINT */
+
+@media print {
+
+    body * {
+        visibility: hidden;
+    }
+
+    #printableInvoice,
+    #printableInvoice * {
+        visibility: visible;
+    }
+
+    #printableInvoice {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        padding: 20px;
+        border: none;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+
+<aside class="sidebar">
+
+    <div class="logo">
+
+        <div
+            class="warehouse-logo"
+            title="Gestion de Stock"
+        >
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAACACAYAAABOUyafAABV3ElEQVR42u39ebBlWXbeh/3W3vsMd3hDvhxryqqu7q6uRncDaAyNsQmCECU3IQQgUhYYEihRQoRpO8KDYIblcNhmmAyZ/kd22CFaCIsEQcIOiaTEEAmYREACQQDE0CPQ6KG6a+iaMisrh/fyTffeM+y9l//Y+w7v5cvKzOrqrOqqPB2vuuoNdzh3r73X+ta3vk9UVXlwPbgeXCde5sEteHA9uB4EyIPrwfUgQB5cD64HAfLgenDdx8s9uAXv8Cuu/LuAAiKQ/m15af6hACrp/x9c3/wlD1Csd+al5EW++JejP1uJmdv95Rt858H14AR5W1f1N/H3adtC8gN1KL73TPpAKwUhBGKwqBrIe5sCxkSsjRjrGNEzcBbnLO6E0+RBwDw4Qd7yNa8r/yEnbeGavtTcbme/2+CANnTsd5GbnWXaCzEoUYUoZuWxTzo70gs0KMYoRgybRqnKwLAWhtZSiCx+UwHzIFQeBMhbFSYRiPOiQFPOH1FEQEQwgMnL7s08x76HGzPYbyNtVLxYChVMjtAjS1lODjCd1yC5Xgk+IsZjjFILnCoM65VlVAhWPIh7cJ48CJC72LkXx8PyRwFl1gtdF2h8ZKpCDAGvKcVRIGhERLAGnInUxrBWG9YrwRGXRwonFNv5P6cerh56tntFMfMqHEERlbTij0SG3rYS0fy3SErVVP0im04ftcdEw9jC6aFhoxZKQw59e+QRH4TNgwBBY44LSUt2GmGvU2Z9oOkCTV+kfD8vaZFbFzsKUZbLVtWzVQcubhRUYk6IyYim5c/21HP5ABq1WKdYzCJVejOfzBzFgvyeNOZYsmnRC0RNX6hSG8+ZAWwNDKW1OSjye30QH+/dAFndwXvgoI/st5GbrdCGFBCiaZHdks2ccMdUlumNjaAxMq6EpzZT6qUrf2wlEtRy6SBybQpiDSKCakDELB9f5c29LyOIScWSLB7McFKGpgoaA5WFMwPh7FBw8qaqqAcB8m4JjZiL016V7R52Z5HDLuIjWOMW6YWKYCswBowcDQxdWWnzon3ef7Dz6Ivw9JiVxGX5t5d62G7AFbm+UG57Ysjx5+TWb8jKl++U3geidUBMfx9NSrFEcn2ii3pJ84kiGhhY5ZE1YbOy+ZwT3svh8p48QSKw1wZenyoHPu2uZpHbL2Eo7Ru2//C30dlsgWKJKhhBjSzXZ9R8M+dfSowRNLBRKaWzafHndGffew66HmcLBAcxBa3OV+p8axdNr1Y0IWR6NCJEVkJDE37VTBvOfu/3cOYj30XTC2IUoxDyOWY1EAIMCkuT0zhZrcOiYsVzbiicH1mcmPc0LPwe6oOkj7nzniuTwHZrUDE4kxaXrqZOqogVYjPl+V/5O4SbO1hXpETFWCIx1wnL5EVIAWPygouqqdYQxcr8YSMaIVJiBQr1qFqi2sXjGZPSrcXKFV0ExtG9TFdOHEMUQZxhdnAIw4rzH/842gbEpJMjqDJ2cLYWmhgZlpFLE0/bF1gxzMPdCEQpeO2w47CH922YVMS/R6PEvdtDIi209N/brefKYWTmC6xNJ0WMt8FOJeXy5WgMPuDKgq5t6HuLmpgqF031hZV0AsVct6SCXQgxLk4cQXAiqObTIi9E1ZWXKILGmOkk9giUJHq0+NEc1YJDAVeVuJzLjaRAwsrfCQxd4FxtWSsta8YiUblQCXsmcNgbUDCqi16LcRV7Hp7diTy5YRi+R1vK7tt8+a9sbXJS/ghRUWu4Mgm8NlWiKTBOTkjoT3r4CDGiqrTTQ8595ye4+D/6KQ59ixF7a1jlTb+3gsSOzTKyWdSpLsBwbZpWbZCIiiBi0lmkERGTkauYTjDJJ8kqNKwrzQ5RNEYKYwk393nmV34JjS2qkRh8RrFy/WCEjZFjZGDaRXaayKmBY1iVTEMgqmKPc7sUrIGZV17Y63j/KcfQmgcB8k4vHqJRiKnIVnMcjAyompXcXPEGXt3v2W4MIganqUTXe8kXRIghUpx7iK0f/Th2mot2OX5apXSrE6gVnlqDOv/8Sg/1LMOsLJt5Epd/PwcCYn5ckzqPRAHpVyHp/O5iKvLD9ZvwX/1dpE0bhcajPRLvA02jyNAy6VOAVFVkzQgSPaIOXaRZy5a+KuAsfYQXdzwf3CwoC3lPZVvu2+rEkBwAxoD3xJuX6ZorWDHY8Sns+iMgQzR2iJREEa7sd9yYgroCo3f/VEegUVEEQx962kkkTCJhZTcVTX12EUVRCh84t2YpgyUI7PXw6s2TEJJcv0QoHPRE1KfVF8QQiUjXEb1nOC4ZllA4x97M0qnBh4A6IUymBA1YUr2SvuYYbqp9KmcRFUaV4/EyMrCgURmUBUUHXaaorB6tgmSo2zINhm/sez64VaTO/oMAeeddHoORnvDaZ2i/+usU17+M+l28Gny9hX/sB6k/8G9QnP0O0I6rXcmVxmKcvXNKddtIUdBcwoogxiBmvr2vBkg64kKExzZLzo1SCtYE5ZWDiLH2RPjWiybI+cXnqc6vY9fPUXYNxgSqsmBYOZwK5VqFFBEDtLs7eLXYUYVxQ9QVLLBajSvNwRzmVthvIm7q2dpwDCyICq/NAjszixHBZlhbbnMbjBN2sLx02PHkWpFOmPfASfJtEyBRBSsw+5N/RPzM32VIg4hhiKLa4JsJ7F5n9vzv0P3gX6H+4L/J7uEh3o0pgxKNYuNddqdvt0okntyMECFgcPQ8uuE4O7AISozKK7ueNjisuQ0NXaEsYO38KUZFpOn2KCTgjIF+xng4oh4M8++nYvrxrTFBI94Jzz7/NeL2DoWm3rxBUZfTT02NQkPg4XHFzYMZlxuYBUdtIhOvqdOhR9/4cSJLzP8ojOH6zLBWRs5VqX8iIg8C5O3PrtIibF/+DfT3/nPGYtAoxNiiQIwRG2HQH8DNbeJv/C3izsuc2nkB//j/mO7CD2FjC1Rv+UsTQHzLqFDOblaccmCi0ovw0mHLfrDY2+QkBuW0a4mHE6rCUNUVzc09vDP0KCEEppMZdVkQY2Q4rIlB6fqeKFA5w9mR5cb1BtUEJ1sRpl1PL4qPUGlgo4yMC9BRwbWDjlmM1JVhw1hudvHIaXjSBrGoSiJYHFf2A+MtGNp3/ynybRAgufsbpnR/8A8YT3aJZgQ+LNIJDYoXwVhDORzjhh186R9gpoK98FMYAzG8ySzryEs5iirF1N3jTBl5eKOkcGlHboHLu4Htvlz0WU46PRAgdFx99Sqb4zHji1vYOnXyy6ri1MYaUVM3O8aIsQai0ge/WJgbpzepiorPGMm7uVCEhotD4SAKhRXOVAM6AoPKcbFySB8onHD5IKDi7mmBi8BMLTemgYtr9kGK9U45PbrLn8N+408waiAcoCFlwYoiziJrJWa9Qn3Fa8/v80efvsR29SG+9y/+GNprRmrutUg/uq1KJitGQEJkZANbI8vWYECpSgAO2sjlg0ijDie3h5MF8BEaN6AaFuCUw9mUvf19nLWY6YyD/T2ixkVsaZxTRVKPZXNtjUGoiG2fHk8VT2Q4WMcInB8riqVXMGqxCiFGrEnp0cybBU0/ANGs9E7e4LImstMETg+F0bsc+v02CRDwO1cxe6+hg5oYAxIdCJjawHjI3m7DC5+5zNe/NGXn0pS93Z5HP/W9uEqYNREncmS8+x4SqEUmrtLSEyht5NzIcq6yOJtIV02A69PI1ZkQxOHMamf+drWNIKagqiv6vqcalJwtT2PEICq5GZi68V3vU4AaIYSIcw4DOCxOXMKgMvTch0jTQ51TIAz4XukijF1qVFoRTlfCS7seLRxyD+vcaqRVw9VJ5Mn1BwHyDqnSA6Y9oBMQKSgrgdJwdVt5+SvbNLpGv3uB9TNThqcN77/wFKf/9Z9hUMDB1BNMgSUSJC2k+S4pJ2VQ88IzfyOdGhHnlIdHhsEAhs4QgQMPe42yM1Nm0YLILcTGN0pXuhipi4JmNkWiwRmDEcl9GkXVYExqEjpbYgTavscVBcSAN5agHoNfdt1NZFgCIQEb0y5y6aZnJo5Hx8KZgUFiZKMUHt4wzIJy2K287zsesIKKZbcNtD5SueObyYMAue+XHZ+jCwVr5YBZX/LylZYvPXONy88Hfuzf+ym+5yd+FCdK38xoemX8Z/4isvU4MXaMxXJtFpn2iqok3lKmhSw/dCVmarsExVmDlR7RVFdoFMbFiNNG6BSuT5WbbeCwU2I0iE28Lj0pRbkNHVcEWg2Mt9b4wLkzdL0HawEPsc8Qc4Qo2BgR7YghYjSgohAD1w8Pmd64RhBwmdy4WZaMgSYqpYW9w44Zjt4YtmcNpwYVKgYMnB0J1yfKgd59ua1YCiBEYbePnHfyrp0geecHSCbblRc/xtXHvptn/8Xvce3qmJdfPuCgE85fvMDTn/wxKAaEvqcYjrC+pT88xG1GBGFrYFgfCHszZb8HHxPbNqrmOQ7FCBRGMFYYqbIxEHxR8cdG6KJigegjV9vI1Z1Ao4boEpHP5dRGc2SInJSq6S0/ECBEpaws+trnaG++hrEF9PtI3yRelg9Y42hnLYNqSF1UBFXUChrhQunY25lifTptVFf4XqooPYOhxe53EAIbQ8HlWA1ReWHf04QEcNzzoS7C9cZwZiC3UFUeBMh9u9LiMtVZtv7i3+Izf/BXufrMP2P94fNw4yaH3T6HbcO4skjmMfnJBGkbjDH0eZLJinJ6AKcH853SLjD+48lBj6FXaLwSYsSIEEXZicprwdCJUlohmtRXCXJ0DlwC9CbBuDYPhoiGI88UxRBQTFnSPfs7HH7pH6MGuhARI5iEXeWFLMxmLeX6Jma8SbSZpp5HhItDRbVHY4Fg2Gk7XvewZdPmsl7D46YgRsNaZdGgqFMmXaDzFmsMrPCTU+8kvZd4m7RrLvgw9TANsGblQYC8bSEignrP2sUP84m//PN85srX+an/81/lV//6/4PoCoab62hM1G6MxQvoZI8CKIgghojQqqI+0kTBRyFEpUeJMRAxxGgJITINnlAU+F2PD4ojN9RiZMP3zGKDxD4vX4WcrmiGZAMJOjVa440i1oCYI6RGYsQ4xV3/GvLMr2FKh7EVNhOu0t9Hggam04b1zdOUgyHTEKiqYUr9FIwYsJFoJPUxVTFSMu1g7EKaOQk964VB1BICqEmBZQGnoPl78xrMiIDGHCRy27NhviH0XuFd2hP5tqlBUsc38rlf/3Wme3vUw5qf/Kt/BUeiSqSx8bxD2wI/2aNTZa8V2r6nDcKhd4QAHlmKG8y7x5ngKGqTOkk0GAxWDNFHiqJEXvoMh//wKt5PEiQqae7DWsf65saKNlBFr4HTT/8w9bn3cfjac+xeeo6icEn0oTyNPP0pejtE7QD52F9g//k/gGvPYIsKTQ0WjCghBup6hBIxriC2PfvbNykQgkADdDqgcAUhpM1E8uI3xhBiCtCIEDWVODON9BNlWDrKQpmFHON5xDiEQCFCmBMW5Q0Pd2J897YLv20CRJK2Dh//t/8tfv/Sc1x66SqPXryAzjroPdgETSmBylp6O+LrO9BGJaoBzZi/uES2ywFhMg6a0on0fYkWENTqcsGpY9DuU+4+i+1jRqvSIBJOqM0mJqbXGdUi2rE2e4KhP4XZexX/6qexpUGDpy3XOXz6TxPiEB0/zv6pxxlee4F693lsWaIaFidNZRMAoJkTNhgMsK7MSWLe33UTEYfGLvMTAyJws/E0jWAsbA4c4xKutIGbU0WjoWgiMb0VemAQlYtj2A+BtargyoFy0AWKXJ/o7dKtd/FQ6rdPgNh07D/5E5/iyZ/4FNPP/zb7z/wL1h96MgWIhpQIGbDG0hSn8JlcaDLfyMQV5RFWpD2PoU3zAaZVVCbFk0FcmVIpEVQUo4o6g5oqzbrnQagQIJoK6jXUDcDVUBgwASkqhKyjpRHjU41UFAWmKEDtkRcWSfMjSirCi6LI7yFiRel7S4wxT9srwQYmAZp9wRYFwUfCoafacMyajkgJxtCtDJPVEjhTCwNrGQwrSsCNAzszz0Fv6ChOLkREFsNnDwLkbU6xVAziPWos9fqQK1euMp3OOPvok9iyRIxC19CamsnG+VQoZ/p4nu5eLng9hrzKyR3kuFJ86zyFygV3CqCwQvHzBHEIgUJgeu0bBN8x27mUaxQyPWYlsxdhrgw3p6rnXzwSuLJS4OtKB1JX5IYka2EhuZ5wBRoFI5Z9LNPrHY9tGqSwvLjTE1zKE8sIpyvLQ7WyF5Xr+4FTpXCqtgSF/T49z+Il590lEDAKg9LmT+hBgNz/wMjF6GLE1FiMSf2DzScu8uoXf5/Da68w3rxAORohH/hB9s4+zf7aI/gYKeYUbllSKUxc6Y+v6KzN50XiseahZnpJlCzZKbocWlpZxVEsqBB9g1Glff15Zq9/nShgrcsPNpcPjRw9z+ISBpYTeiYqtwZ1HhpTk4JMMg2ljAan0BIZmvR+D4DhwDEohQGga8K27yjVMi4du9OeduCIUdk9aHBjy2Y9oAmWhixiN1c4UVATk/5XZalXZILeWFj7QYC8pVeMijGyMiGYYdi2J+5tM9o8xWMf/jivPvcV9i9/FYabVJ/8eQ7OPUmZF0bbrTzON5kq30I3zBOBogYhDTgFU3H2kz/LwStfoX31TzCkWRDV1F6fQ9EqJqVNIgQiXmMmJmZ+2Qkn2qra++p0eh9Cmjac/1wNRiFqZDASLgwME98zLCoE6BU2ho41tdQa2Jt1WGdRDGMT+MDpMimxoBQOCif4sHz3WTaMoXM8NDLpPR3RDX5wgnzLEypVwRhh/+aU16/scP3aPpdevsnhYcPP/qUfpIwzoldGF57kfePT9O0eMiwxQ89v/fpnuXplynd/3xM8/OHHsbUwmea06DakoyOEW701KCT/wnyXTsIjstzdRQlty+jDP8Dah36UwRPfR3v5y9z40v9Ad+V56rpAig2M6ShcTdXtYU3Ea0klUIliXIG4AlGLxjancvOUJhBEMGJQCUtejCa6fwj+Fv0tEcN04pFa2CgcMcZc8CcmsqjQG0trhJu9Qfcjj46EUVWAwt5hy6VDg3flkcf1qqwbzxPrBXWeRTvsI/sthPnsjYlsVI41l86db9fZEffOPDnSiMKv/9NP88//yZc5PGiJscP3lrKo+dTPfJyzTz5Fu7ND1fVUow2qtS2ms0MG/T4XT6/xa3/39/jaH/4R62c2+NN/4Uf40Pc/RTNLH6B5g+bX3ZwgK8q5i1pEPYTBWU5/9MfRGOl8wD76cR597CPsP/97yItfZVSspXrDOfrLn0ckAhVBCgauwF74cHrjEti+8SKhDXlR6ZFkbPl6ksiDKwqctaiPSxpZrgqcLROyFiNIZOJTA7QSYVAYPDAeWEZN4OZhT+Eq2sNAhdKppTUWG1cADKAWePxUwcjCNARe2/fs9xbF5mHGRLa8YZS1AZwfwpr79jxb3nHwg8aIMcIf/u7X+Pt/+7eZTYW6doxHI06f2gJV/vk//SLF2e/EfMePEoZrtL6nnzTUaukPDvie736cxx7eYGhOs/3yLv/l3/j7/ONf/DWMegqbqOL3cJgtRmoXo7UrgtIqCXQKvWf9oz+MO/UozbShKAqcBGZNYO0Dn2TjJ/5D5IOfIIxPo3TUYcqgj5T9lLrfw4ggtkRMgRi3CIy7TUVTk3LltQImBoZ1+pCNMfQRLu/2fGNPefGgpc0Um0oD79+0PHm6YG8a2fOOnd6xHwqMTSIYZu5epcrWQBlbYRaUb+xFbrSGIJldbYVSwFmLN5abM+H5m5Grswcp1ltSkCPC/u6Uf/Qrf8jaaANbGEJMvexIR107Pv1bz/Jjn3yaD3z0O+jOP4ru7sBkm0uXrnPhsY8wGhhGY8vkoGXz1BpGA7//T/6AK69e4ef+lz/L2ul12iZizN3tDzoXfF7R30XIneZI6GfUDz3E6Q98HB+UunbM2h4RYTCoiSEw8xb38FMUF54kvv4VwpVvYGYN1goSV4PBoFqAugwXmBUoK2QZFHOH+5gke57chHENGpICfafQRaiso1UFHyicQ6NFVZn0Smclv99UM1lddt1TlhnYLNPrvDoTJl2xoPZrVmFUo3PuQaLn47h0oDiNnB5+eyk1mndWgKQP8r//53/EjRsHlFW56NLqXJjNKqjjV37pXzA7nFHW61QXnuD66Cn+r7/8Na5cBd8ok4OAc2lll3XF5to6r3zpZX75P/177F+9SVmb/Nh3SKt0VZRhedsEQ1CIwXB2eJFTj/8AbniG0Lc0bcdgMKCqKtq2JcRIVRZo39P6CI99F+47f5z+kffng2hV2+seaOPzgj33ZVZTQQ9cm8GNTtHcUR+I5VSl1H3LQy5SWpsC38CltufKTInRYnSVmZWBA1E8UIlh4Cx9DEwbn8aJRY48v65C0vNTzggvHvbsdX5xEumDALm308MYYXdnwu/+5rOMB2Oi11tqAI1KWQuXXtnlb/1n/4yD3SkC/MZ/87t87U++zAsvvMyX/+QyO9sTXJHK1rKsEBE26jE3nt/mv/hP/y77V3epB0IfQ27YnbwshVVHpyzcIJEgESi4ePE7WP/YD+M++kk6n+Y5yqpmOp3Sti11XWOMYTabYZzLQQ9+dJZ+dA4fUwMjSqLbI1k+SIQoMUkdZVTLmPTcKmmISiXmwSqDWSnREzIGNxvD6/vQaVqgauCh9ZqLZ0oe26goMnTdRWWnj2CLLHS9kkbmr/nJadD0+nJj6G7rblElSMGLB4Fp1BONSB8EyJ3SKwy/81tfZffGFCuJfGcWThpz+U2DRhgORjzzpev8zb/2D/jtX/8Szz93g42ts/zB77zKr/63n2UwmHOaDMY4nCvovVKOhkwuH/J3/i+/zP7rewyHFu/jHffs+fxIjBaNBaaHM6ceYnz2YfQDH8GMTuOM0HeBvusZDAYURUHTNAAMRyMUJQSPcwY/a4mvv4RECHNDngzNKoKRGqFEKVCtEFNhxUG0actXScNUfkDRl4jaI81NNO326pXdaUclQqmai/rE45pDDGqEsbG4EDHERVtm3rOMmhA7oyBOebN4uUPoQsVrk3l79Z2faL1jahBjDM2s49P/6nnqqk4SnG9YmEaGg4qday1//2//FoPBkMGg5IVnr1OVFlfMR1YTB8u5CqQlxkhdVWxfuskv/o1f4uf/Dz/H1qNnOTiMFCea3aSd0lrDzWuBL+5dBwr2OcWf/8lH8WdPUz30fvq2pe966kFNjJHJZIJzjrqu8b2naVLhXhQVIoYX//Bf8bm/9/cZ2ioX2R6yRpYChIBqWDQykZMhatEe+opu1mBsui+RkBe2Yp0wqiwT3+PVMCoMNqTO+DQoO5OI1DC0hgmKUbk9oqerNY7gCktoU72TqWJ32GISiHezgfUicq42DwLkrlCYoBgrfPHzL3H51RuMB2sZlkzNvnmhvCoxLplJWxY1VTkgRsFISVEk2DNGPcKlslm4TSTpVY3LEfuv7PL//mt/j3//f/OzXPzIY0wOfNrRIU0JqsGiBBQxhomveb3d4HU5xWuzmuFLM/69n/m+RAUTKOuKyWxG4Rzj8ZgQArPZjMIVi0ABZbZ9nS/81/+Q/Zev0RY1IYYMUOTUQ+c2DJKpJIm3ddIglkSPYYYOqkzGlOyZuISCr09h1qX3MXDw+IbQdpFX9yIeS+hDomsam1gEekJ3Mr8ODZJOZYGtMrDbQRCbB6bu7kQICNenntOVYrMm8YMAeaO9JW8kv//bz6Q5Bwl5LHZldlxBjU2FPIkGnjbaVKAWRY0Rh/c91hYLCZzFCZVXzHwQSKNnPBwyvdHy//rrv8TP/Puf4gf+tU8QyzxOZWA2c+wzYlcLDsIme/2IidZ4V9CEhkv9FowfwsXIrPcYaxmORgTvmUwmlGXJaDSibVuaWUM9qBEMX/niH3PQ9ax/4OmFOPaiaLV6QpPSLBb7LZuLBFqJhBuvU2QW8sLxU1LDda8FJDGADxrlWqEENXRikrcilsCyMD9aHhzV640rWsKbA8dG69ntzT2tcQMcemG7CZwb2AcnyJ1qDxHhyqVtnvv6VYb1MNcOx26cifT+gLZtk86VRgRL1/aUVUFROqDAB8/p8RqHhwdLiooKYvLiyTMPZIpHWVmCN/y3//mv8fXPPs/3/+T3MN2ZcuX513jlpVfZ3U+FtO8dRixGIOwdUtXCv/uXfxoIzJqWwWBAiJHZbEphHcPBEB880+kUZx1VnWgeB5MJ1dPfzw//zT9FGYUoySx0ofJgVjvhy079sk5bvXcBqaB7/Sqf/Wv/CQR/4kI1K9QUa+DGJH3PLlrcS/uF2+ZXycWB3ke6HooydfUfXXfMdiJebSZ8Lk+b226IogSxbDfK2cE7uxJ5+wMkKOKEz/ze8xwedIzHwzTNpqupVXJP8t4TQsCYEgjEmKbrovYQHdZYMDNGo5r9/T2sc0eYr4nXpayWNxoVK8rGeMRX/uArfO63/oDRcIsQewpXpuk98ZSmZBpavGt43yc+wL/zF3+Ex57cpPeBqiw5nExwRQqM4D1t1+KcYzgc0jQNElNNdLWHttjAiNCwJEAeI1i9Aa57tOEhxhDNEIO57VzGwhpaM7GRVUKmHHWSOH585WJ6zhb2WA59ZFxGosLICg+NhMv7iY8lGXbWN4C3RJMP4iw4DnplvQB9h0o+vL0BomCsoW8Dn//MC1RVkVKoY9We5rE2Yy1lWTEebdK2DSEqVVkzm+2jKpRlybTZ4+rVqzhbHHFm0qjMJjMMMBhWGCNEVfL+TdDAaFRTF4aiGhGlxxghxECMYPsd3vfkGX7oP/h3+Nh3foAPbgh9aGiaQFk4hsMR3vdMphMKV1BVFV3X0XWpJ2IErh807HmXINuQt+TFUpVFKnVL109WUx05Ui0nm+hwAjjNW5/bK2AMN2eRMwO3kDc6NzSIBl47aGmdxZAMet7o+SVPIrY+QFE8gHlPLM7zh//1r17m0is7FIW7ZRcUklDaXBcKUWIA50rKsiaEZIsAPjvERqwtCHPZHBF8iAw3Rvz0X/4pHvvYw8xCy97BlKbtUgFsbEpnjFDUJUok+sjhQUPQjgvuJh+Sr/ND3zXku3/og/SNZ6eNOFuzPh5hRJk1hygwHCah6aZpsNZS1DURpfWR61PBk4adopHcmTeLgvzkLv4c5E7NSVn4KBo0W69FowtFlVtOhbc4SMTAxFtutGRhiSShdG5keHjDYMWnMV99A1XJ+ViBxAXh853aE3lHFOmf+/SzeK8nepC3vsX7QC0DhJoQDhCTJG9kNW3CJ//AXPAWRY33HpMZsEEiH//Jj/N9P/NdvPzMa3ztT77OC194lpuv7LN/2OJKQ1k4fIy0hzPGZ9b4xI98iPorv8Fas0tXTIke2pnSR8dru4HDquPcuGRU1hSlY9r0TKcz6qqiKkuaZoZYi6lKbhx4ZrHGupUZFCHTTO4AYGhC1lSFUud6J3kXBlTifUOCJAf3tWnP6dJRzOeXVTk3KChLxyv7kVmfG7AnmBXJXDxMfJI5WkhDyIMAWc0cjBEm+w1f/uOXKatBgnYXhaWh6Wd86Ic/wAt/9BL+oKMaDNGZo2kPKYshRoRZt0uMgkabUiJvqSrY3Njk0uXXsGZIVMV46Hen+DMlj330MT7wPY/h/8Kf5toLN/jal57l6195lssvvMpoNOKTP/XDfPzPfpz1zYrP/ML/Dzfts8GMpAamRDrruNwJN3Y8Z8vkCDuqBwRV2qalazuGgwpjIwddz0ETKFxJfxcLUFdSS+07rLFpBNaA14Q4oZpRp+VfmKXv57f0sgYan8Svn1h3K0W5sm47Prxp2WmFa41h1i1h+fnyDzZB+8PSslZKhn4V++AEWQ2Q5Mv3xc+/yM61lmI4xodpkrExhtALo60xf+Zn/xTXX7/Ole2rVKOa8WidtmuZ9HtEnWLNgOFgY2GDXDjD/sE+0yk4Wy5oGgBqLYijaQNdo5Q4zj19gYe+8wI/0vwprr12jdFoyOlzY9oAsxs38GqItgTvl9ONOq+fLEEtN5rAYRfYGilnhobhoKL3Aa9g1bB/OGWqNdamxWuXvb/FqokZklWf7BOcDYjOKLs9Lpw7R+UcKsqlA89+V6RGaJQ8+lpQqF3MqswdcN9qLYVVrWFjHDeagDU9j6w5TH79Rg1GlHO1ZaOCvRb2Z4FJL/RzWo1Ratfz6FqahWExof8gQG65vvrsJSQopVE8jq7rMK6k7Tu+7ye+n7VzFY88/jCvfvHVZHNmhLqu0ThAdRPrBM2CDWBz8R2xxi7UQYwYggY8kVIFQxrb7YG2U2gT1HzmkXOowv5ewJYG52TBO0pDUbLYrwUo5wees0zVMj2M7E5aTo8sWwNHYZT9JrDbWbAl8RjfK7k3KGICDmVoHMVYOFUKtTiEEbF3TPb22A2RcxfOMz64wpWXLjHcOEVZDpCN8zgVAhYjx5KZb1HGsvCMN5brM89MPRdHhtoAUiSGM4EK4XwtnK8NM6/M+mVPZViV1GbpS2/eoWDv2xIgcx3XCPS2wkg2uBdHPXBM91vOP3mWj3zyaWZTeOLJR/m0/Sxd22UrM0VwWFOmybu5qIEmEbeEWsWMa6YTpO972qahlGGmseQ5h5W2s+9zquIMLHR2deE8axZzEavpTXpDTiNGAk20vHxoudFELgyVpo80ZnDLxx8VBg62qkhdWyoLhUbatmWyN2Vn0jE97GmaKd63uKLg1NZpzmyto+2Y6WSP/e0r9NuX6Xb30TBNjOcVO5Jv9QBfUkwq2G0ikz6N9p6pk4Srw+ATrozVwMBFBm6OViVQRd/BJ8fbe4JoKiyve8GNS6K1IBY0phtWRL77z36U0aAm9DA4PcKWFd57LIJzCQ5W2pUcPCXf1jg0RsZrYw4nB8kqQSB2gX7WURrosybvLZiA3NqQkyS5lkPC0BmlswFHxKglqsmiDhltMklRvQnCK/tpARjNiE0OxlQrRLYK5aGxcHP3kCvb+8yajmbW0oWEyBljMMZSlqm3MpvO2NgccuHJD+A1BX3oIjsvvcTXJPUl4oqJ5/3Yk1WTuF4f4dIhXJtFzg6UzcpSWKWQrDyJWaZoWWXy1uB450k+vD0niEDjYbcxjMbjhEpp1oeNUFSOCw+fJib+A+VwiHMldIG+S+JohStyF57lBFPmTPm+ZzQeMp1N6EOHswbtAocHidC31L3SEzu+84dLzTXJIuuadbEEnE3qKoGFEHSqQl1ivs6R1uxMo6stjZgp8ygHfeQcBQcHU65e26HKRMa6rPMij2iIdCECkbZrMTJiZ2+fqEJROOrhGpunz2CtRUNYHXa8rxnB3Ne0C3B5X7nmlLJUzknHaFBSOoNdaT7OS3I5MUDkPX6CANM+KY7UVb3Y+cjwbVFaiqpcCOPUdY0rDL7xaXS07wBNHhmscpR0cY+vXLmSi9a0e4UQ2L25jeUJRoXSihLCCR+KxGR+ic09irn+laXudzj7yqcZ7e0g1uJiShQt0PQ9k9BTWEc0DrUOYwzqBhhjUbW0owuEjUezj7kyVSGIsrY+wJZJGCEEnwp1K1SVo64rhsMB49GI4ajMfR7L9HDKdBop3ADv+yMn4NvVUkhsXQGbXK36Bl6JDpkqwzKwVihVaRkUUMlSEV7fwcYJb0uAGGB3lrhUg0ESFdBsXRyjUleOYlQuiHFFaSgrQ7enOJusxLzvEQTrXKKCr1Q3qW4uabsGYzQ3EKHb2+fsINUYV1rwPYjRxQkQo1K7yFpt2Z14wrz4zzI9du9l1l75fYaHMyhsKnEAG8Ee7qGTHYaDGo1xBVFKqUQADotTdJ/4j2hOPYJ0kRAih03HsCry6K1y6tQao/GI4aCiHhSUlcNKzKaliX9VlwMYG6yzFM5h3iHG5boiDSM5YGNWXdzrYbdTOFRKl+juW2VkozYJuVxhFLznA6SNgUPfoVVBWSdhAAWMCjEEBsMRhXP4oGCgcMkB9jBOV1AkwYck5VMWZWqWiWKtpe1a+g7Onl2n7Xqmhw3WFsxem7KGcqDQtnHxUc4pJ4Jn3RhOlULslIOYglBU8E4wXWpsxTrlE0ZBjNAezijqIUVsafqe4XCQvf9ksUMaEdabG+z/8X9N//3/IX19ihiEidScruHDTz9JUTlKc3QAN80umWTrbMBiicZx4+o1FGU07PFNn+qbqEdGWd/u3vTq86fJ3FSneYWdVrnZCINJ4KERnBqYVIPKgxOEvU7oQkEFmGGJFCnXNiYp+5XjClMZ6CMSUso13BhzNV7HSbEg94lC8D1djEkf1hmqaszh9CZRW9o2pVZIgiS3X99nNvG42jIsYKcR1grYrIVp6xkWlqFzhC6yNSoYhhIrilpwbSCuP85hGBN2vkFhC1SSKaYzlrp2VK6g7T2zw2mCmZmrtBtM7+nOvp/u/PuJ3QSGW0i/hz7zJW4aj0gkRI8//Tj1+AzNjW+w/9qXU6c5xmSmEyPtdJYaqn1P7Hq2e6WZNNC3YIq3vvnxLQgYk09sFWE/CJN9z0NReGy0lCsy78UAme+Ms94gUiZjm7qiqCzxMHfQVBmMB5hCUoCowToYrQ0JRFRWi+z0j+C7JP0fLGVVU7oBnd+jaUpU+xQ8CjcPJxwczNgcjjk1MERNjODSFoxHZaJuKAt8pRTJotgRiYEw2MQMN9Lv5IacszbXUR2qSl0P6LqWEOLi/IgaiG2DX38E/7GfJjSpcjd+QvOF/w78jIjivefs9/wEw4vfS3vlG+x95beT7ULu4scYONw9IHrPfBK9LGr8NEAIKUC+Da7VELY2jTZcPkhp5MW1uSyree8FiJCK8a6PiFhiJI2hlgW9+lQSa2Q0rrJFgUFMUg853N/DponpBa0hSh4RzQ5JUZW2aXCm5GB6A2vWSFocYMTRHOxzY3ubM4+sU/aBh8aW1w8jU68MykiISaYmzqcKsy3CAvaNPYUV3MYY48r0SjRR9okJ4lWFoqoodGGqkOoba+mchTZCUMSBUUNVGkoR1FjEOpytk/p7UWOqUULv5vcvRkwVMEUCEjSC2gKcByZ8O17z6tEVjiszxRnloVHKDk6C4t+Oevm+XjNVpjEP60QoSEof0yhM2paubxmPR8n1KEOdYuHMhx6hs5Hal5iYNKO86fDiF227RP9WNBjUg/oG+oRW9XlRalHkxR95bT/QhIKRs0hI1gn7vfLqvnJposxCWGhnKWCdw1hHDDF172MkRiGKQ3Ew/74GlEAgZpJh6vtEY5KNg40LCruqX3wBdAc3aa49S3/wOi4mlkBuuacACT6Rl2Ni987NdhLQkQCJVQ3sd3yAaBptJiZr6lf2lZsdLBCQ91oN0nlPCAYx6TSph5aiWuN0fZVPfGSTL379gOF4tIjcOWv62sXAv3z6Kk81cOFmwaBzuFhjQ0xGMgvLZqHzEVdUUFpCjExqw9XRIXsXGsoL61jg0KeAOF9COcfmFfYnkaAW75W27ecuHkm4obALdm2SVc/LUO7U98kWbHP2bf78JZqsXJ+Yus5E9l79PHuvfgEbDaW4RB2/597Gapn+7WVuY6zh6n7LxlaV7K/f5kC/bwGSRRNpQxI1S344SqyFH/hzT/PU5Zs8fdHyqY9tcG1rl0kfE7nQR8TAs5PrXD/dcaPeYTCFzVnF1qxirTErswepcxEMNJXloJxwWB4yrZRp5fHhgOf2X+ejm+u0eWy0KlLfbu4uVZpA8AmCLqxjPluhIrRdS4ie5YpdWYALdTk5ulCzftXcVEOzTUIiKvqV3zSgjiKQf0fprR6xHVh93PkMlcq7S0/dGuHQF1ydRh4e36OQ3rdzgMzfYhMMUZIqhliDn8AHPvooj1brhBuXWCsKhgdf4uXLBd2FjyMmmXNcnx4i0WBUmFaBaTXjtVNtWt1HNsmYMEUjEDKHSlPjjZnna9vX8RefYlxbLh8q+wQujg2FVSLC1tgw7QNF4SgndiEOkU68NMd+ZMFKSIhMtvREVm0WJKdOIRmLAi52BI0MoiCxRbFEHIESwaGmRehz6nFMdX4BdMRbBB3eLZcqqLNc7QKnI1Rvc4/n/qVY+X32oUeoj+DjXefpvTK2KaXQqmAQOlycEeyIEKDrOnRu9ZUtkGXOCVm5hyZzLYIqH956iJe2r9PEiBELWvHlK9d56YMw68Cpo8GzE3rOF0WKLWMZ15baCjrJU4qS3ACPzmkvjJJPTnEUinLAaPMhUOhFGYsnvPybqEbKsIbtDzEXnk4nglF2t19lOplhzTuRdHF/C+PWG65MIk+svUdqEEWJCk1fLHbCxYCPWJzvOJwdMqWi9lN0E7pqjPWeiCXgl5DrQqdpqc83X6YxaXSivmO9LKnKiulsmgpdZ7h0uM2eAn2ktgYfk4KjoDgkcUyjz0GRSZQnLtW5/GAeOtV0hpicbmlMyFk5WENjqnM09LC3TRSP6E567cNR9jY0iLkC0a8853xXfYt1bHUZ4v0bZDCLZqXe52DVRH/faZQLo5Bo9G/TONV9LdJ9VLxabIZDF54XpmA2fghz/TWariWsP8bk9AeRRJYiCviYKBbGOGaxW+T+MX96xmSaO8m000ZofZesz2Lqnzhr2DnY5qBteWLkGJbCa9c8ZW3Y6YSDRlkrlHXn8FbYaUIqku8EVOqRyuDoZx11bmm4+A1DQbR5qCnzssSYrLaiecr71sX6lhWsAmN/yCBOmfOQT+pXhRCRoOwPTtOa+6vPYwV8TJ/Bw8PibavW72MNIllNPU+ezXdaARXLa4//MJsbD6GzfabnPsqhKYF+oRzuvefCxmn6vmfazDCFI8bAej3Eo8zaNhMThSJCH5UD31HVJex6emv47offx829m/Q6ZavaxIhydsNx2EcUz8aoYPumYgthUAo3+lzPrKyc9B4S7DoP0rmHIYvdNokRaP79mE9LNP2/zsWfV05XRZMgttzmxNCsOTWns89ZzBJPlPu5k0XQlr/BGX8dieUtP0MhBk87mWFiZPrQkJkZYG/Dfv4WHSIglu0Ozg6Ft6sFel9PkF6UIEcVN7xJRbTHcuPUB7CnIYa8Y0oBMWAVKgw3vad2RZK5kUTBeHx9g5uThkuxwdhULLdpuTG2dXqDec61xrDdTxGmrJen6PrI+TXLqZiUAaddZNvADRWKaSq4k5JjoqmXtmRUrRGrEuPcqrApMUDs5xRuh0ZPVSt2MMTqrSr1R0vrCLZkMBwQOktpKpaA8LIPI1HpXJnVYLIgnlVCNJhM3TA2P3rU5NQ1dyfVuEhEA0KMyTs+is3PMfceSdMvRgqc7em1SyWV0eUo4X0KEiMw9XDoA6fceyDFCjESVXISxIKguNjx8oe6ZKzlQVoDw8EQugnmiCe3UlhL1/fMR+g0KkMcTz/xPsTA5SuvYMqC6D2RiPeemzd34dwjCEoMujDD8WFeWSixzzq3ub4wZcn+qy/ylU/v4faupdMqLsvKoJ7WTxZCOKjiip7hK19bdP5v25XIVgqT3X3CtCVKR8ig8CoUbKLSHbTp9UkCKcQoXQ99SKdP2yUL6qET1FlwuS7LskFEcBZKrZC+WApia5rX15jo+9r0C9HuNBsjb0tLRYLhoFVOWeXtYDLe1wCZ09dFb5NUy63yMJIX8Ho9pN/xjM0gd1mTwFx0hk5DUozKI7dd7Pj6ay9y2LfgCpwxaIDaOELbc21/lwBsd1A4qAvBRM/mwLDbKTdnEVdbrNpFSuOqkt2vPsNnvjRLjT+1K2rrsurwvDSIUQGeO9EU9BYIQ9ICvnDeUw66FYUXcwTdsXmCcc5oVnrAcvFihRAJfcnw9d9j8hsz1Fq8iUQiik31GAZnHZM4o5eIVAMKZxHjMKbCWIsURQryricqVLOb1KbIVtOgxhGoj6V26QNNB83SxTHper154NMg7DWeOLC39ZZ8lwSIHltBR9GnE2/QIu+GTVfT+J5yvhvblBVU0dD4DovkXdcQtOdQI1IOQG3SThTDnu94+tyjvHjzGq/N4NKBMnSBJzZs0ndS5ZGRYc1FdkIqEjUTE0UCanu0S2lJmMsKrsC6hJMiQe5qKRiNhNAwXjec3RLwJqdRdnEzjtcu6Sa6jHS0IG2yeT54lvjFV3DDOhX9RyTb0/3bng+tLzYpg8x93o0g1qbOjikw1QhvK4IVJAbMI99B+YM/T98XyS9dUioYcoeo1A5vJG8wb55Qpbn/1MXAJAhrxrw7A2S+26UCXUHsXe0qKuCNMAI26hExBIyzSZihbfjw2cfQrqfvelxR50AgNQhFUSeLwpbS8eXXX+GpMw9BXXOtA2cMMQS6PjKsZTGPMLdWkJxzi4BvPRsf/SgP/+iP089A3tIPKz2XMx597lfpt7+e8iCVpXC16EodcFQ/azEMqUshBVcNMWW12NW5Q9HOqo+u6gKEMH1D9Ps4zSJwvqer6qRcKUVKUzMEW+mMrfgyp/xLzOyYq/YTdKZcznu+yaMkULLvlbViych4V6ZYy3TiHg5ZEQgwrga0xhOip0b4rsc+jPrIF698A0qHZ6nDS7SJSbtosqed0hQlz1x+kfetbbD+vTA7CKzVPXUxQGMa5319GpP6eS25YRcxooS+p3rk/Tzyk5/i8PCWVsU3f1cUhha2/+HniTe+ihO3NAxdNEGXG4eufk+PGO+mnkwuyuNxgEBP3oiWTc9U7EsWVog5jUz+7NB2Ha0WDE2R7eMspRywGV/inH+Ooe6gCMMM7b3OD9C7+ZyKvKnNFTVMQ8wk+LlBqHm3BogcoU/cWQVQiAoba2vEEHhyfJpTjw95eecGL+9tI4VjVR9jLn6dviCspDpRgKrk9cPrnKkj5pylNBZsQnWCGiadT6zdvGuTtaaMRDR4moNIN4mIfWs/oEjKlvDxyE2ZB8PxU+CW8k2XkqZ67HTRO9ZA87rBHkuJVySaQqDtOixQljWiHie7rOlrnPMvMuQAK45oNtO4sTFsyS5NfIFt/QA2Gvo3ufUL4H0aZzD3mYB5nwem5E3dHATG9ZDKG4iRz77yHDMUW5epEcfcHEfRGFDvUWtPfjZj2euTOsqpuqDPsjzWJH+LQWHp2tXURzIP0aSd1Rowb3WKlZFok0Z4l7utvkVb0pt/JBEheE/f9VR1DcFjwpTzxSEbRYFzGwgfzzyyUZYYDRjZwEjgzM1/ie8GHPD4sd1Q7ukUabuAj8L9RnvfUT7pt7u8h/VqwADLldkeMxuxpkpF+cJkRtGu56mzF9jWHW7M9hAcS+X07FloDLuzjkM/47RW+FxnXJsJY5PE3PbaowtE4ZZU5a0/V3Odb7LhjZhMq4mLTeLIjPeR9OjY91YmLm1YLsXbpba32FzrUnShmc1S+jcc4kNIhkUHL7PVfh23/qPA5i1Lfg6VCzCIFRfiF2iKITM5i8vmLHIP/H0j4HF4vf/M3vsKC6SbYhbWancjsix5TmM0GCC5QC8oUl/r2F0MfccnnvgQH3n4IrQNWQJ++aHHBIt0Xc83tqeIEfre8+J2x85EeW0/cmN6/DOQFd2tbzGQIct+0NvJUjQZ3ZrNZhhjqOuavu/puy6BF5IG2YKPeN8TvF8KFmdH+ySdBN4aRrrNxf5zVOzg5y5U91yjSZJpus/+6vcZN9M3tbVGImvlgNI6OiJ23vNYebhoEu3iQ2cf4WOPPslCwU1vfcOd91zab9hu4GZnaKKjlJAa0KtMKEl1SDSLmcX7sDiLb0kBercbthihzw5ZVVVhjKVtkzvwXMqoqEtcbWialsnBhJv7++xMDlGE3kcu3dhld9YBjj4qnRHW5Abv0y9Taf+mlp2i9NnYVe5jhNyXFGsxu2B0hRh39zcpqjK2JeOiop8v4RhQkyyejaYmpHU1j6+fYbMcpoIzRDCpWbXoS4rQhZ5D7dhu4LCJFNbgMfmgSOjLkV6+HDeo+VaC4SWq9i0Jx/ng4/wzuNNbSClVg8bIoB7Q9z0xJqG6EAKuKChckTetGVihkhI1cOXmDsMy+TQe9AE6z8YQ9AAOt29SVBXOHXBqsMbO4OP39P6yAkG2jri/InP3tQaxIpn7J/d0c6IqhXEU9QAPlNbSZNUQybmJes/pwTqPjrY4Va+xMdpg37dIUSwQH5PJgsFEbrYztAD6uWq73DIMOG9yaTZ4WdDzv4U1CCLfdGH9Zq/ZbIYYQ13VNE2z6FzHGCnLEjEm0Xq8J6oSYkzsa1UeOrVF4QyFWB49u0ktgiVgjSXGiIZAYZWhvM4NPHILff2N+cq6UJzhvjJ773uACEpUuacQiWoYiGHsKm7ECWVWcJcFpUHAex46fYoNO2RcwhPnHuaLl7+GDEfHAVFA2euTCkhQk4aiVjLA1fpIdFm03p8MNGZLubcm6DJB+MQUa3EPVWnaliJLubb53/u+TzXIYIBqpOs6go9U1iZEOO5TuMDG8AxGshKNwporFhQJs1mzYTYpigqkZ9dsEtXdmj9I8khBwZ7oupXVN+G+1mf3V/ZHTpp0uLuP2gkMTUnod7HHIVZJ/YOPnHuMyhl6gY88+j6++NKXkZPSPYVJM0XC0ZlAOdYvuO+DQsuk8i0/PuYyOsfrDfWRvu8pnCN4j7UW5xzNbEZVVxhJNUjX95Rlmej1nafwDi0txjicBGKcpfG1xc0U8IpRj8ERO5vUW4xjzN4tbXWj0DhHX9SImsR3O7J2lhvY/RwNuX8BknF+I0q4165q9lIf1APCzONc9uQ+xjB9+swjCzj0w2cvJiKP7zGuWGRMMUfI4XT2jhpn1ZWs7lv+wrL9Xd97Qt9j58FRFIQYsKbg3PkLiTApCUUUaymKgs73FAPH7qc/S2deIYYZGqYEfHaYSud627asjdaxhcPKJAlVBKHWL3BO/+RYtAoiPZ3UHDz9SfbWHsf1cdHFfzuv+55iWZM0qu51FSRBNoORyMBUSYMqNwNjjLiq5rGzF+gDFArvP32BqqzpvUesRY0sESpj2O/bhXe46DsrUBanyDepMDgv0uXYCWlFiH1AfRKc6L2nrEp6HzCu5PzDj+BcmZHCmOR3NM2JVFkPoLl2BaNXcHOxPEk6ykagP5xSdIpsnKNa30KzSEfSbjmg1KPHmQKOyDh02Bc/TfeRczRSrTj6vn1b2f0LUUkbuojmMdN7+6CNgdGwJvhIaR1oQHJOGoPn/GiDhzdPoyHSB3hs8xyPrW0RfZ+kLFftyYyhaZskV3oS/UFWYZ/cZFRZ8J303s6Eu/6KsspTezNHyZ3mCNP77b2n7buFXUFdlQv3rjNnz2Ktw/s0bhyi0gfFxzRnH2MSxLBFgXUl4spEirQVmII+wKT3DE6foXMF0zaNPS/mZMQRTUG0dvGl1hJsSVutUR2+wPDqV4iFSyfIEacsfRcHSH6ySnhzDi8KZVYvDEmjNBt0CvSeJ06d5Ww1JMRIp8pmUfDo1nno+1tppKqp6RXvqdy9h49nvuAFFkvjDv9Tk9OTFbWWI03Kk79E0mAXRhCTYO1ozG1+1+B9oO3SzGVROlxR0LQpzdo6tcWgrAjBL5qWqW40GRDJiJ8mJfm571bQiBLxXc/+wQH1eER0hno0pJ1O8MHnlZaaiCaLusoK+UiByjuqWLB++XOsT18j2FUrBbJNwrs2xUqKHwNRdt9MfESo1DBrW9Y3LPMxQAME73nqzMOMgL2YehZOhEcuPAxf/wIaIlh7ZL37EJZOUHdNnLzL15ofr9AW4zXrZp2gK7dybyQKdRQOVFEpEt0kbyuqRzuec8TNZJ8UouIFjPQYUbBDoldcBL/ypru+p21bnBXqQU0Inrbz1PWAtbV1xqMxaix2XmvrceG2zI1WWXYjJLU1e+/Z3z9gMBrgygpUKIxjbTjk8GCP8alNZD5+cAQwSf0no4KawLRYQ0KkvvJV6vedQ1NbOIXo21CS3EfZn3RDCmezs+s9/r2B0pZsTw74YP0+Cmfpc48EsXzo7KOETCXJ3p18cPNh0HnXPX+4IULXUbkiEd/8nTKZ5Y6+aI3M5bj05DTGkzxN9LnP0H7+n1I4l60QYOlYtfoUiYE8EWV4uM3gkYephoOlRilHvT9iTFOCUQ3rD3+Mcjim9z1BDGZyg4NXnkFKh5QOtwJRT31gPB7hrGHWNIQQqOrk/RhC5PDggJDT36oaZEmjW9+fIc3HLzYYhEkzZTAYMBgOiSEgNo1Y29EQc7NnemMPqVwaX16B0jVvAN53xI3THH7032TmNnGq9IGFUMScxHK/UcX7qmoCinWpo37P6ZmCKwq0axmGyLor2PaeIIENV/HUxtnkw51VSLzA2fEGuOTjMRd6VZLi4sZonAbqVBdz8bcN7Xk6p0qI6YMvQ5r19i4tfKuC0+VOYErBdA3F9vNUZbHA8GN843kYay1uOMbVg+xspYnhO+9bZLlRg9KrYevD38Ng63EIMygq2huvEGc3QOJSTSVfg8EAYww729v0ITCsa9q2wznLbDahaRqaWUNdD9ncPIWo4FZgWz1W7Cd6T9qkyrqiHg2ygHZWdDHpxBisjZns7cNhAwhBlnGf6kuLEmgKSzM8S0edZk00LpHHqIvW4v1Ufb+vJwjAwKWeRrjnAIPt/T0Q6AgEWHhmbI23ODNaT45UMrdGyBI9Khi3MnxkDBQFm+sb+Vf1Ds8675QoA2M5ZwPNIFKZRAexRQogh6HIlJarh8p+BGsHqKmyZ/tcv0vesNCfz7KbmJyv1CztFzTLqC5ec/CE6RSte4J22AD9tMX3HluYYwLpuWaIETGWqizp2h5XOGwGLfq+YzgaM1obs3ZqPcO280W5Ingqq5seWEljTPFEuCCZng63Nhev+/hpZMSAttiNUxxgkCzYnewultTk5Bti72sn5L4FyBy0LMVQ2+TJMfciv5sGY6fwys51WB8xKYT92Cc7tN5TD4cUZYX65OYUsvutz6mcNbLIxTVDh2uDMU5Y7M63BaDmaURQBq7goaGFwercp1v8smqyHthpQ1ImylI8txcS1TdAv1ZN2FYL5tVG5tz6IMtiC9mT8fb30YjgrKGdeOqywqtnMpmgwGA4xIql6zpMHosO5ngWwJGx3znosXoqHq3lZIU+vzwB5r4rkeUJkWYPBOwJ/iDKkvHwbkyx7PxDNkptPRNv7urpFXAi7AXllck2pwdreB+JoccWaZRzY22NYWHp+wTnmnm2KsvjPpEOl8vrtBuwKE3kzi9CRYmZAhLVLPTkNH/iIsnnUFUW6IwxZmXKzywaX0f5XPHWho8qikdEkzh1uDWkEkIWiX0D1mC6bKMtkWAUq3IiAzlmUKOqKjrvaZoppXOUVYUxhqaZJT0ynRfHd0aTjzMRQqossGkW8dbtYHEoyNJyGwsUi00srA6xhFTEl+b+d0Tu7zxI3oOq8l7GwjQJiPU9e13DqWpIN22XbIwYuVBvZEZvnkPQ2/uvzPfjcT28y7GLNMOiuX7wPnBwcMDuzV3arksaEQLb046pzzCozJWwzDehRHgXe6VGej/DxwOiAd/OSLJw7oS/n8N1htKVdLOGrmkoi4LBcJiCYzaj63rqqr7vPYf0mclK/0lPbDS/i2He5Qc1dAajMXv93U2KlXR2p23D+fEGfR8SPBgTz/18kdwf48JLI09YiyHaueOSLnYnEWFclnmakDs0CllAm5qtDoyxDEY1RtKsdhMD13b3GZUD6tOjBfikknw+osgJ8kZ6x6B84/BRjFj6a6/w2o0XccbhW6WwLW4xz3fyFtV0LV49g0GNK9ISmM1mhBAYjUaYDIm/dQO/d360O7VFlxC5vnsDZH4DRhYKlDbcxSvQ1eI1S9Hk9uq8yD41GCxzW5lLb8LAWihsKnaTNFYy2izSbMlRFceT1u5KgIjJplKK7z2+6LHWYU0Sfji/PqJyBUZksdOpMfm55VhuHvN4I8uBjVt2e7OAgG93X4w1tLuXAaXPm02bUaHb79SKOKEYljhriSFyeHiIMYa1tTVmsxm+n2IQenkrlHjlrjaFRSqstx7rmgEZmafK93Em5G2ZSXdWqGuhaWPSWrqL+2uMpNkCVTSbdkouAEf1CGdu/SysKxJjdS7PEVN+b4yhcsUbfF4rogmaLNgkGvA1UT1Rp8RQYqyi1uAUtsajxd+5XHTO5xD1WzjcIVlsYlnI3g6ZW3bmnXPEaPDRMzmYYq1jPB7RNA1d17GxMc6Y1P1OaVbBiaPPnwCI90SKld72uBZ2Or2LIijJ/gxdzage0EZPXQxXIsdS1/XRfSXDyOvFgMoUNBmbR5Zajta6u14CkikWnmS2WVUFw9Ewn2rZODT3LAwm6WkVgri4fF49toO+QTNEOSoSd2cE4W5Ll6xDLBbfR7ppw2AwoCormlnyXx8MkjhDOqT1FjTqrj7fzLSWe9Lz1SPctyMRryAmJg+Vd7Now+q14STZH98NRKwwKhwbgyF7XUO0kG1wEbFURUkMR9OlqDCuaipXISpYMXM6UJ55KO5S6c/jQ8ssNPjmgLpwC2vmOWwqxiDGYsSBGKxE7KzBTD1WDSYu+vDHIN/bKvUuJhnfaqBdRPGhp5lMGQ4GlGXBbDZBUKqyoOu61BjVkBGo1a+706SSuykq7rFUsVkX+D1xgqDKwAjDMrDXppz9jerlqEpthNOjdS4fXsEWNrlNaWp6OWeTgIkup+dUoa5rhqMBewdNqlnyB1A4R2ncG/ab0vNGbNFz7uE1QiwZ3PwGO8/8DgZP0AINHq8NMURi30PfoAphb4LbnRHagwQUqMkBEu/fLb7NClUVvId6uIYrS6bTGRoErKXvAsaWVPUoyQ6tcuVv4WTpW/2COTIRtQCCUzaQAkTeC9KjQBTEwqnKc9CSPMbf8ARRShXOjzaIXc+WcTjrULFEfOqOm/mxnlOsEKmKks3BmCu7N4gud2JEGWCpgix0oY9fvZ3zhZRP/MgTXDxVEiSxgps//g0kemYxLotKXaZhZPTskbJgqjNuiix6EnetLDI32nlTISXEGKkGm2ydfz+q/pYwOf2IJkicRJuZe6zP/94YwVqXfB2PbBmKGMvhzVdpZzuIcXcRKPHeosT0Sdc1msXNiCKUNuKQZAAL7+4ifZ7YrRcl1sgRUfQ3+pvzw3WatiNIxEpSczcrue6qM5OqMigsF6o1nvEBWxlCZjEW1uHs7bwH05MFo6xf/yPW1yOt7xaiVaVYcG4leOMtWUJEaVWZtU0mIsb7DE4qxjiqakjQ/uSx49UKa8ltzx4Vcsxed/nOMA6x3wp5Q1mmoceGqQoNrDnue/3x9gVIfp+VNYzLyHYL7i7e/COb59A03Elhi4XJjMZbC1VFKQ1cXNta9MjmKZZzNhnx3DKwl0UDnLD2+hcYvfAvIATUuIV6SlxsivM0Iy4aWzF/zFZhsr8PoQfCYi7kbvc9fQuSGEl+cUuhgxVI+ShxPi7VKRN7c7nhnFAgCOGuZNrfqFl7t+sjQSpCIZG1wtx2O3v3BcjKfThdK9u9Jh8MvT1G7iM8cuoMUg2wUbBZjUNVF17mq+CQ5jTl8VNnF1TxeYSURYFYWdQtyzufBudHN56n+OKvMugDMqwIIWbKta4spPRHYU4fIbN5UaYH+zixFAPHZDZd7rh6t/v/wnX9zVUf81PVCBKzDJ0aTp4xiMfqALnD+j+6RE/iYImCw2B1dR7lbkpTXdhPLMBehWFdULtUMJr3UoAAjErLpvQchph8B28DG/Y9PDo6zXoxoG0aXFkQW5+GhdqQ9WxXGlsiRA+PnD5HaQpMVLxJ3n2FdWByQNpjbQ9VtJkQHv0I237G4Rc+y9a6oaiWG6dRXdAIUx2Sduqohr7r8BJZ29igaWa5L3E/NWVlESR6hPj4NmAxd1lvrRbpqz2jCJjgOV3emVnwrgwQJfmHn66FgwN9A3RCCBG2ygHnhus0fUdZFAk5MoH9fpLw/WByoOS+RYBz61usjYbsxxYjSeShthVDQ4KLVwAaI4aoEf/Id+Gf/C7C7h6f/9u/xg9+9xqDYcR1t26iQhLDi0boJREURxtrScIlsjJhdb8XprxBfXxvCdzqKXGcqn87v5FgMktXv7k3slEb1iu5v0Mg76QUS1FODS3bs8hBWKFEH9uGNEbWSsOHth7imZsvMaiHyOEUkYj3E+oCujZN1gaFiKEPysPViHPDU2xffRm7ZtC+QyjZ9pGDaSBam+erswcF4EOXFvh+RzEo2Dq9TlGb9MB5gEcz2G9D7vDKctfzkjyXzNynBLlv2r6S85I3jkm9A9XlDU4DuY3QxUk11F0EiOR8+Lhe+NwZ7NxAKN5GVZO3PcWaS76cHln295fpgCWZyc+hWB8Ta/bjjzzFbzz3OcxghHpFZ1Oeu9nyhe3IzUOPMZbeK73PShzW8JFHf4DCWC4fvk5x+gzjtffzm98I+CbQFplxm9mkqiDqUDFUE8tTUlEYh9jla8tiG6uZ2bHZicSl0jn8m1OseBeTlHpLz+Fekpf8PAoYm3sZNoEHIiu7/b2lfMefzYi5w2McmVq5Q3jIQtkeTaigpKFP1geGjUqPjh6/1wJE8mLaqGE88/jO0RVC4yOzFraDMG0DvY9MQ0QG38mf/x7LjWuf59reDhtnHiFwls+/Dm3ICh86DzKh9fDD7/8RfvnP/QjTZsb/8Jkv8Ef6KK0UFM5SyXL3XxAdNA3tFC3EkIauJEaSmK9iwpxWIoseCCh2JXPJgFAaL80SjidLah5dLyFPDdqYpuluSWnm59RxEmPmjBlNhexiiEpNdstaEv2WZMg3IhKe1NqWRTN2Vbjhlr/MAnJGJRt7nmCcM5+I0rkhBgRRnBG8Qu3g0dFR2VR5L54g6QYIJcr5kfK7N1pebiwHTWQWLF4cIVpUHNYo1tZ8Bw/xCz/3P2d3/ya/8B//79n8sR/EXTTEQ481SR5OjGBVObdh+NLv/CbPNQ9RoPxPPvXn+dC//m/zP/t//i1290C9xzqTSI0LuzUBC0YL3PkzBBcp1GQFjqWX3y0umnpcViAghKVd9F0RvxQjASOB+egwchw+FVB3QtoU0sKVLIphEgN6Meh6i+/JSb2O42dHzCePLBZ/ml70HLErPnL+RQSf3vstxXVcgcdZyAlZPLFr+MLVnkfWAt97Xhia5ZivvE1p1jvHYUqFsXO8cnDAc9Mhw0GFGMXEgBXFm+QTcnqj5Hf/m1/lb/zhHtcuX+Ef/vIv8v6vXeEXvu9XkIfWaPc7RA2VNXQSGa1BqS0/9x/9T4ni8WXJs7/5T/lHf3ONn/4rv8Do9Dl8D8005GlES7SCeiUM1hj/9F/Cf+P/QxmnBOlYkOqydTJ6zFpOl7c2BE/UgAa9WwYTqkpnA05Dgnr1KMdVlsP1J9YVghDUYyQiUTEaMt9PjzYY8sJeuA/fbbJlIlF9MsGVtNh1cRjMc88CoSKKw5slJVQWInwR1CFiUz2HEDXQyJAvvt5xoe7YKurU5Tdvr/yoqOo7QnhzzrG5NA380lcbbmpNbZQyeipncNaiGjl1puBf/p3/gv/qr/3HDLceoyod+we7PP39P8C/9b/4T3jiu38Ib6E/SDI49djy3O//Hv/Zv/vjCTMragZ1QRsj5y4+yff/xJ/j+//sn+exj3yEruvxQVBrsTE1qYZ+xvnd58D2uRV4PBc2t62W+xCyOJ05tlPHvCfcunsn41FFnGU5GpFF1nRZAq8eLBLnI8H5Z8ZTFWMqs4YSMnxqlnpFOZh01bv+HlCAvm0JoT8KqMh8QFcJWNQUiHXJmpuVRiS6GGDTbDwqJK7VYXRMyg3+0ofXGNijkx/333ztnRYgJFFrJ8JXDjz/3XMNlTUMyhpjLFZTPWAczJ7/LL/4v/1f87VnnoNxxWg4JswOkNLxkR/6cf7Mz/4cT/3Qj9N2qVAedDs8+49/kWZ/h93dfX73X32eV165gu8O0gc23OIT/8ZP8R/8H/86YbCFBIOVZdQ2NjkSyJ1q0pUTRFKdnFCveOzncnug1ehSWV6O9u9SWK0cAquNuaUw90r2FJfoqJxEJp7bocsKAnY3fQt7NN5lXhaFFZg3v97V+Xs54XnCvN/Rg42BTzwU+MFzJf7Y1vOeDxCyZaVEEON55iDyuSsztltLiDaR56ylD/DEhuGJcJV/8v/9e/yzX/01vv7cixxOZ4kC3zYAfPLn/lf85f/T32TaQ0HPU+dKRgMIHtob13j+M7/P7/z3/5w/+twX2L2xy+a58/z8/+2XGDzyQWKf0K/5jh1Fb6u6eNIE3FEIU+6qa6bHateTMCC9jceMZFGJozuurJw+LCnOiwDKzU6VFfOeW8qJE4VY1BzroM9FKnKEziHwKCz0kxcoIaBRCcRsWKoMTeDRAXxww3Bxs6SYizncZg96jwbI6qJLUF8T4fXDnkuHke3GctjBrulpJpFxMeA7zjuG3QGvvvAMz37pT3jhq1/j0uUrTHZeZ+vxj/Cp/93/nd7aFDdZrNkZoSoMZ7YsDxfgDreZHu6zfuY8z+xW7LaSeiliuCMqK3qErHgvfYXjlmjz3oock9Q5PtS1AH/k1hPk+N+f2MTj7v+e4/E4/7lZLmAzjyVVNAdIFnUlRiWSgAOL4lQpSsvQCmtlz+kxnK+E05VlozTZWo9jgtVvM4j0jgyQ+ZE9P87zQpn0kVlUZq1n0ijXpy0z46iqikHhKEzS3BUfuOkdz2xPgYolkJjnxVXwwROkxxUl1li8D1gkmfOs8IGOrJATdu9FgMxX1rEAWUW19Bj975YA4UT+7B0CRBco03E4dE4WnDf2FgJ0q38/JxXONcp0mQNqToHmZbzqSrGYb47TkBjVRFxUnDG4IlC4JBJ4xvUUzjKuLOvOMKwsQ6AqjuFSeXY/5Drf8iBA7hglxydJjXDiSu2j0oZI7wNRYRaFxitKYDcaWg8hJuu3tldatfgY8THQ9UkdJVih18TVCipoNElswSQGb9CY06mjttDLIa0lGXJFTz2LS8wX6KpKtq4Isa2s1tuKy8lCgwtZTopETYXGHH5NsLDJYGuq67J1xzIBywX6XEh67h1pUKIqVhRrEpmg1mRy6lwaJTZGGFqorGCtsG4DzhoKC0OrVM5QOoOTpUv9iRWnLmcsjczVd+VtTqi+nQLkTl3dleEzswpd3pK1xltufAS6xa6lxKB0Ov8e+CiEkBaLV/Aq+Kj0MUl3epWsy5WsiVXT97zaxZx6VCUqdGaeghg0uhUOeMyLRG6t4G8TIPOfm/lE1eJPIlaUIqNEpQgukxVdVl+3OVCdEYyZB4DgLDhJ4nwuT+1Z0fR9I9QkRkNSa7kDMnHiBOMJPcJjXRFBT2gmyoMAeSsDZonmy5EP5ugEuC5SEbmjfMwqzdS8wSI+OQeb/1vgeE96xUNK32Bh3fKTVQmiVQlSOQFs1hMeQe5l+7kVPZgniAsUYdU0cN5TMfd8AOgqkPCOKMvfZQHylp9Mb7BW7q7V99Z8vnqvD6Pf1Et/YyTuPXy5B6Fxm4Ugb2+w3nOAyINF/SBA3qvB+uB6ECAPrgdB8k68zINb8OB6cN3++v8DwyJMFUN+ITwAAAAASUVORK5CYII=" alt="Gestion de Stock">
+        </div>
+
+        <span>StockPro</span>
+
+    </div>
+
+    <div class="menu">
+
+        <button
+            class="active"
+            onclick="showSection('dashboard', this)"
+        >
+            📊 <span>Tableau de bord</span>
+        </button>
+
+        <button
+            onclick="showSection('products', this)"
+        >
+            📦 <span>Produits</span>
+        </button>
+
+        <button
+            onclick="showSection('movements', this)"
+        >
+            🔄 <span>Mouvements</span>
+        </button>
+
+        <button
+            onclick="showSection('suppliers', this)"
+        >
+            🚚 <span>Fournisseurs</span>
+        </button>
+
+        <button
+            onclick="showSection('history', this)"
+        >
+            📋 <span>Historique & Factures</span>
+        </button>
+
+        <!-- NOUVEAU -->
+
+        <button
+            onclick="showSection('userJournal', this)"
+        >
+            👤 <span>Journal utilisateurs</span>
+        </button>
+
+    </div>
+
+    <div class="sidebar-bottom">
+
+        <button onclick="exportData()">
+            📤 <span>Exporter</span>
+        </button>
+
+        <button onclick="document.getElementById('importFile').click()">
+            📥 <span>Importer</span>
+        </button>
+
+        <input
+            type="file"
+            id="importFile"
+            accept=".json"
+            style="display:none"
+            onchange="importData(event)"
+        >
+
+        <button onclick="resetData()">
+            🗑️ <span>Réinitialiser</span>
+        </button>
+
+    </div>
+
+</aside>
+
+
+<main class="main">
+
+    <!-- HEADER -->
+
+    <header class="top-header">
+
+        <h1 id="pageTitle">
+            Tableau de bord
+        </h1>
+
+        <div class="user-badge">
+
+            <span class="status-dot"></span>
+
+            <span>
+                Disponible
+            </span>
+
+            <small
+                id="currentUserDisplay"
+                style="color:#64748b;"
+            >
+                Admin
+            </small>
+
+            <small
+                id="currentDate"
+                style="color:#94a3b8; margin-left:5px;"
+            ></small>
+
+        </div>
+
+    </header>
+
+
+    <!-- DASHBOARD -->
+
+    <section id="dashboard" class="section active">
+
+        <div class="stats-row">
+
+            <div class="stat-box">
+
+                <div>
+                    Total Produits
+                </div>
+
+                <h2 id="totalProducts">
+                    0
+                </h2>
+
+            </div>
+
+            <div class="stat-box">
+
+                <div>
+                    Quantité Stock
+                </div>
+
+                <h2
+                    id="totalQuantity"
+                    style="color:#10b981"
+                >
+                    0
+                </h2>
+
+            </div>
+
+            <div class="stat-box">
+
+                <div>
+                    Stock Faible
+                </div>
+
+                <h2
+                    id="lowStock"
+                    style="color:#f59e0b"
+                >
+                    0
+                </h2>
+
+            </div>
+
+            <div class="stat-box">
+
+                <div>
+                    Valeur Totale
+                </div>
+
+                <h2
+                    id="stockValue"
+                    style="color:#3b82f6"
+                >
+                    0 DA
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <!-- ALERTES STOCK -->
+
+        <div
+            class="panel"
+            id="stockAlertPanel"
+            style="display:none;"
+        >
+
+            <h3>
+                ⚠️ Alertes de stock
+            </h3>
+
+            <div
+                id="stockAlerts"
+                style="margin-top:10px;"
+            ></div>
+
+        </div>
+
+
+        <!-- ALERTES PÉREMPTION -->
+
+        <div
+            class="panel"
+            id="expiryAlertPanel"
+            style="display:none;"
+        >
+
+            <h3>
+                ⏳ Alertes de péremption
+            </h3>
+
+            <div
+                id="expiryAlerts"
+                style="margin-top:10px;"
+            ></div>
+
+        </div>
+
+
+        <div class="panel">
+
+            <h3>
+                Derniers mouvements
+            </h3>
+
+            <div class="table-responsive">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Date</th>
+                            <th>Produit</th>
+                            <th>Type</th>
+                            <th>Quantité</th>
+                            <th>Facture</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="dashboardMovements"></tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- PRODUCTS -->
+
+    <section id="products" class="section">
+
+        <div class="panel">
+
+            <div class="panel-header">
+
+                <input
+                    type="text"
+                    class="search-bar"
+                    id="productSearch"
+                    placeholder="Rechercher par nom, référence, marque, code-barres..."
+                    oninput="renderProducts()"
+                >
+
+                <button
+                    class="btn btn-primary"
+                    onclick="openProductModal()"
+                >
+                    + Ajouter un produit
+                </button>
+
+            </div>
+
+
+            <!-- FILTRES PRODUITS -->
+
+            <div class="filters-container">
+
+                <select
+                    id="productCategoryFilter"
+                    class="filter-select"
+                    onchange="renderProducts()"
+                >
+
+                    <option value="">
+                        Toutes les catégories
+                    </option>
+
+                    <option>
+                        Général
+                    </option>
+
+                    <option>
+                        Électronique
+                    </option>
+
+                    <option>
+                        Medicament
+                    </option>
+
+                    <option>
+                        Alimentaire
+                    </option>
+
+                    <option>
+                        Informatique
+                    </option>
+
+                    <option>
+                        Autre
+                    </option>
+
+                </select>
+
+
+                <select
+                    id="productStockFilter"
+                    class="filter-select"
+                    onchange="renderProducts()"
+                >
+
+                    <option value="">
+                        Tous les stocks
+                    </option>
+
+                    <option value="low">
+                        Stock faible
+                    </option>
+
+                    <option value="out">
+                        Rupture de stock
+                    </option>
+
+                    <option value="normal">
+                        Stock normal
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div
+                class="cards-grid"
+                id="productsTable"
+            ></div>
+
+        </div>
+
+    </section>
+
+
+    <!-- MOVEMENTS -->
+
+    <section id="movements" class="section">
+
+        <div class="panel">
+
+            <div class="panel-header">
+
+                <h3>
+                    Mouvements de stock
+                </h3>
+
+                <button
+                    class="btn btn-primary"
+                    onclick="openMovementModal()"
+                >
+                    + Nouveau mouvement
+                </button>
+
+            </div>
+
+            <p
+                style="
+                    font-size: 13.5px;
+                    color:#64748b;
+                "
+            >
+                Chaque mouvement génère automatiquement une facture ou un bon d'entrée imprimable dans l'historique.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- SUPPLIERS -->
+
+    <section id="suppliers" class="section">
+
+        <div class="panel">
+
+            <div class="panel-header">
+
+                <h3>
+                    Fournisseurs
+                </h3>
+
+                <button
+                    class="btn btn-primary"
+                    onclick="openSupplierModal()"
+                >
+                    + Ajouter fournisseur
+                </button>
+
+            </div>
+
+            <div class="table-responsive">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Nom</th>
+                            <th>Téléphone</th>
+                            <th>Email</th>
+                            <th>Actions</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="suppliersTable"></tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- HISTORY -->
+
+    <section id="history" class="section">
+
+        <div class="panel">
+
+            <div class="panel-header">
+
+                <h3>
+                    Historique des mouvements & Factures
+                </h3>
+
+                <input
+                    type="text"
+                    class="search-bar"
+                    id="historySearch"
+                    placeholder="Rechercher..."
+                    oninput="renderHistory()"
+                >
+
+            </div>
+
+
+            <!-- FILTRES -->
+
+            <div class="filters-container">
+
+                <select
+                    id="historyTypeFilter"
+                    class="filter-select"
+                    onchange="renderHistory()"
+                >
+
+                    <option value="">
+                        Tous les types
+                    </option>
+
+                    <option value="entrée">
+                        Entrées
+                    </option>
+
+                    <option value="sortie">
+                        Sorties
+                    </option>
+
+                </select>
+
+
+                <select
+                    id="historyProductFilter"
+                    class="filter-select"
+                    onchange="renderHistory()"
+                >
+
+                    <option value="">
+                        Tous les produits
+                    </option>
+
+                </select>
+
+
+                <input
+                    type="date"
+                    id="historyDateFrom"
+                    class="filter-input"
+                    onchange="renderHistory()"
+                    title="Date début"
+                >
+
+
+                <input
+                    type="date"
+                    id="historyDateTo"
+                    class="filter-input"
+                    onchange="renderHistory()"
+                    title="Date fin"
+                >
+
+
+                <button
+                    class="btn btn-secondary"
+                    onclick="resetHistoryFilters()"
+                >
+                    Réinitialiser les filtres
+                </button>
+
+            </div>
+
+
+            <div class="table-responsive">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>N° Facture</th>
+                            <th>Date</th>
+                            <th>Produit(s)</th>
+                            <th>Type</th>
+                            <th>Quantité</th>
+                            <th>Total</th>
+                            <th>Tiers</th>
+                            <th>Action</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="historyTable"></tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ============================= -->
+    <!-- JOURNAL UTILISATEURS -->
+    <!-- ============================= -->
+
+    <section id="userJournal" class="section">
+
+        <div class="panel">
+
+            <div class="panel-header">
+
+                <h3>
+                    👤 Journal des utilisateurs
+                </h3>
+
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+
+                    <button
+                        class="btn btn-secondary"
+                        onclick="exportJournal()"
+                    >
+                        📤 Exporter journal
+                    </button>
+
+                    <button
+                        class="btn btn-danger"
+                        onclick="clearJournal()"
+                    >
+                        🗑️ Vider le journal
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- STATISTIQUES JOURNAL -->
+
+            <div class="journal-summary">
+
+                <div class="journal-stat">
+
+                    <div class="journal-stat-title">
+                        Total des actions
+                    </div>
+
+                    <div
+                        class="journal-stat-value"
+                        id="journalTotal"
+                    >
+                        0
+                    </div>
+
+                </div>
+
+
+                <div class="journal-stat">
+
+                    <div class="journal-stat-title">
+                        Actions aujourd'hui
+                    </div>
+
+                    <div
+                        class="journal-stat-value"
+                        id="journalToday"
+                    >
+                        0
+                    </div>
+
+                </div>
+
+
+                <div class="journal-stat">
+
+                    <div class="journal-stat-title">
+                        Utilisateurs actifs
+                    </div>
+
+                    <div
+                        class="journal-stat-value"
+                        id="journalUsers"
+                    >
+                        0
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- RECHERCHE JOURNAL -->
+
+            <div class="filters-container">
+
+                <input
+                    type="text"
+                    id="journalSearch"
+                    class="search-bar"
+                    placeholder="Rechercher utilisateur, action, détail..."
+                    oninput="renderJournal()"
+                >
+
+
+                <select
+                    id="journalActionFilter"
+                    class="filter-select"
+                    onchange="renderJournal()"
+                >
+
+                    <option value="">
+                        Toutes les actions
+                    </option>
+
+                    <option value="Ajout">
+                        Ajouts
+                    </option>
+
+                    <option value="Modification">
+                        Modifications
+                    </option>
+
+                    <option value="Suppression">
+                        Suppressions
+                    </option>
+
+                    <option value="Stock">
+                        Stock
+                    </option>
+
+                    <option value="Système">
+                        Système
+                    </option>
+
+                </select>
+
+
+                <input
+                    type="date"
+                    id="journalDateFrom"
+                    class="filter-input"
+                    onchange="renderJournal()"
+                    title="Date début"
+                >
+
+
+                <input
+                    type="date"
+                    id="journalDateTo"
+                    class="filter-input"
+                    onchange="renderJournal()"
+                    title="Date fin"
+                >
+
+
+                <button
+                    class="btn btn-secondary"
+                    onclick="resetJournalFilters()"
+                >
+                    Réinitialiser
+                </button>
+
+            </div>
+
+
+            <div class="table-responsive">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Date & Heure</th>
+                            <th>Utilisateur</th>
+                            <th>Action</th>
+                            <th>Détail</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="journalTable"></tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- MODAL PRODUCT -->
+
+<div class="modal" id="productModal">
+
+    <div class="modal-content">
+
+        <h3>
+            Ajouter / Modifier Produit
+        </h3>
+
+        <br>
+
+        <form id="productForm">
+
+            <input
+                type="hidden"
+                id="productId"
+            >
+
+            <div class="form-group">
+
+                <label>
+                    Référence
+                </label>
+
+                <input
+                    id="productRef"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Nom
+                </label>
+
+                <input
+                    id="productName"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Catégorie
+                </label>
+
+                <select
+                    id="productCategory"
+                    onchange="toggleExpiryRequirement()"
+                >
+
+                    <option>
+                        Général
+                    </option>
+
+                    <option>
+                        Électronique
+                    </option>
+
+                    <option>
+                        Medicament
+                    </option>
+
+                    <option>
+                        Alimentaire
+                    </option>
+
+                    <option>
+                        Informatique
+                    </option>
+
+                    <option>
+                        Autre
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Marque
+                </label>
+
+                <input
+                    id="productBrand"
+                    placeholder="Ex: Samsung, Dahua..."
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Code-barres
+                </label>
+
+                <input
+                    id="productBarcode"
+                    placeholder="Code-barres du produit"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Unité
+                </label>
+
+                <select id="productUnit">
+
+                    <option value="Pièce">
+                        Pièce
+                    </option>
+
+                    <option value="Boîte">
+                        Boîte
+                    </option>
+
+                    <option value="Carton">
+                        Carton
+                    </option>
+
+                    <option value="Kg">
+                        Kg
+                    </option>
+
+                    <option value="Litre">
+                        Litre
+                    </option>
+
+                    <option value="Pack">
+                        Pack
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Emplacement
+                </label>
+
+                <input
+                    id="productLocation"
+                    placeholder="Ex: Dépôt A / Rayon 3"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Fournisseur
+                </label>
+
+                <input
+                    id="productSupplier"
+                >
+
+            </div>
+
+
+            <div class="form-group" id="productQuantityGroup">
+
+                <label id="productQuantityLabel">
+                    Quantité
+                </label>
+
+                <input
+                    id="productQuantity"
+                    type="number"
+                    min="0"
+                    value="0"
+                >
+
+                <small
+                    id="quantityLockNote"
+                    style="display:none; color:#94a3b8;"
+                >
+                    🔒 La quantité ne peut être modifiée que via un mouvement de stock (Entrée/Sortie).
+                </small>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Seuil d'alerte / Stock minimum
+                </label>
+
+                <input
+                    id="productThreshold"
+                    type="number"
+                    min="0"
+                    value="5"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Stock maximum
+                </label>
+
+                <input
+                    id="productMaxStock"
+                    type="number"
+                    min="0"
+                    value="0"
+                >
+
+            </div>
+
+
+            <div class="form-group" id="expiryFieldGroup">
+
+                <label id="expiryLabel">
+                    Date d'expiration
+                </label>
+
+                <input
+                    id="productExpiry"
+                    type="date"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Prix Achat (DA)
+                </label>
+
+                <input
+                    id="productBuyPrice"
+                    type="number"
+                    min="0"
+                    value="0"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Prix Vente (DA)
+                </label>
+
+                <input
+                    id="productSellPrice"
+                    type="number"
+                    min="0"
+                    value="0"
+                >
+
+            </div>
+
+
+            <br>
+
+            <div
+                style="
+                    display:flex;
+                    gap:10px;
+                    justify-content:flex-end;
+                "
+            >
+
+                <button
+                    class="btn btn-secondary"
+                    type="button"
+                    onclick="closeModal('productModal')"
+                >
+                    Annuler
+                </button>
+
+                <button
+                    class="btn btn-primary"
+                    type="submit"
+                >
+                    Enregistrer
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- MODAL MOVEMENT -->
+
+<div class="modal" id="movementModal">
+
+    <div
+        class="modal-content"
+        style="max-width:650px;"
+    >
+
+        <h3>
+            Nouveau Mouvement (Génère une facture)
+        </h3>
+
+        <br>
+
+        <form id="movementForm">
+
+            <div class="form-group">
+
+                <label>
+                    Type
+                </label>
+
+                <select
+                    id="movementType"
+                    onchange="updateMovementMode()"
+                >
+
+                    <option value="entrée">
+                        Entrée (Achat / Approvisionnement)
+                    </option>
+
+                    <option value="sortie">
+                        Sortie (Vente / Livraison)
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- PRODUIT SIMPLE -->
+
+            <div id="singleMovementProduct">
+
+                <div class="form-group">
+
+                    <label>
+                        Produit
+                    </label>
+
+                    <select
+                        id="movementProduct"
+                    ></select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Quantité
+                    </label>
+
+                    <input
+                        id="movementQuantity"
+                        type="number"
+                        min="1"
+                        value="1"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- VENTE MULTI PRODUITS -->
+
+            <div
+                id="multiSaleContainer"
+                style="display:none;"
+            >
+
+                <label
+                    style="
+                        display:block;
+                        margin-bottom:7px;
+                        font-weight:600;
+                        font-size:13px;
+                    "
+                >
+                    Produits de la vente
+                </label>
+
+
+                <div
+                    class="sale-items-box"
+                    id="saleItems"
+                ></div>
+
+
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    onclick="addSaleItem()"
+                    style="margin-bottom:12px;"
+                >
+                    + Ajouter un produit
+                </button>
+
+
+                <div class="sale-total">
+
+                    Total Vente:
+
+                    <span id="saleGrandTotal">
+                        0 DA
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Nom du Tiers / Client / Fournisseur
+                </label>
+
+                <input
+                    id="movementParty"
+                    placeholder="Ex: Client ABC ou Fournisseur XYZ"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Motif / Remarque
+                </label>
+
+                <input
+                    id="movementReason"
+                >
+
+            </div>
+
+
+            <br>
+
+            <div
+                style="
+                    display:flex;
+                    gap:10px;
+                    justify-content:flex-end;
+                "
+            >
+
+                <button
+                    class="btn btn-secondary"
+                    type="button"
+                    onclick="closeModal('movementModal')"
+                >
+                    Annuler
+                </button>
+
+                <button
+                    class="btn btn-primary"
+                    type="submit"
+                >
+                    Valider et Créer Facture
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- MODAL SUPPLIER -->
+
+<div class="modal" id="supplierModal">
+
+    <div class="modal-content">
+
+        <h3>
+            Ajouter Fournisseur
+        </h3>
+
+        <br>
+
+        <form id="supplierForm">
+
+            <div class="form-group">
+
+                <label>
+                    Nom
+                </label>
+
+                <input
+                    id="supplierName"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Téléphone
+                </label>
+
+                <input
+                    id="supplierPhone"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Email
+                </label>
+
+                <input
+                    id="supplierEmail"
+                    type="email"
+                >
+
+            </div>
+
+
+            <br>
+
+            <div
+                style="
+                    display:flex;
+                    gap:10px;
+                    justify-content:flex-end;
+                "
+            >
+
+                <button
+                    class="btn btn-secondary"
+                    type="button"
+                    onclick="closeModal('supplierModal')"
+                >
+                    Annuler
+                </button>
+
+                <button
+                    class="btn btn-primary"
+                    type="submit"
+                >
+                    Enregistrer
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- MODAL INVOICE -->
+
+<div class="modal" id="invoiceModal">
+
+    <div
+        class="modal-content"
+        style="max-width:750px;"
+    >
+
+        <div
+            id="printableInvoice"
+            class="invoice-box"
+        >
+
+            <div class="invoice-header">
+
+                <div>
+
+                    <h2>
+                        StockPro
+                    </h2>
+
+                    <small>
+                        Gestion de Stock & Facturation
+                    </small>
+
+                </div>
+
+                <div style="text-align:right;">
+
+                    <h3 id="invDocType">
+                        FACTURE
+                    </h3>
+
+                    <div
+                        id="invNumber"
+                        style="
+                            font-size:12px;
+                            font-weight:bold;
+                            color:#3b82f6;
+                        "
+                    ></div>
+
+                </div>
+
+            </div>
+
+
+            <div class="invoice-details">
+
+                <p>
+                    <strong>Date:</strong>
+                    <span id="invDate"></span>
+                </p>
+
+                <p>
+                    <strong>Partie prenante:</strong>
+                    <span id="invParty"></span>
+                </p>
+
+                <p>
+                    <strong>Motif:</strong>
+                    <span id="invReason"></span>
+                </p>
+
+            </div>
+
+
+            <table class="invoice-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Réf</th>
+                        <th>Désignation</th>
+                        <th>Prix Unitaire</th>
+                        <th>Qté</th>
+                        <th>Total</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="invItems"></tbody>
+
+            </table>
+
+
+            <div class="invoice-total">
+
+                <span>
+                    Total Général:
+                </span>
+
+                <span id="invTotalAmount">
+                    0 DA
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="no-print"
+            style="
+                margin-top:20px;
+                display:flex;
+                gap:10px;
+                justify-content:flex-end;
+                flex-wrap:wrap;
+            "
+        >
+
+            <button
+                class="btn btn-secondary"
+                onclick="closeModal('invoiceModal')"
+            >
+                Fermer
+            </button>
+
+            <button
+                class="btn btn-secondary"
+                id="editInvoiceBtn"
+                onclick="toggleInvoiceEdit()"
+            >
+                ✏️ Modifier
+            </button>
+
+            <button
+                class="btn btn-primary"
+                id="saveInvoiceBtn"
+                style="display:none;"
+                onclick="saveInvoiceEdits()"
+            >
+                💾 Enregistrer
+            </button>
+
+            <button
+                class="btn btn-secondary"
+                id="cancelInvoiceEditBtn"
+                style="display:none;"
+                onclick="cancelInvoiceEdit()"
+            >
+                Annuler la modification
+            </button>
+
+            <button
+                class="btn btn-primary"
+                id="printInvoiceBtn"
+                onclick="window.print()"
+            >
+                🖨️ Imprimer / Sauvegarder PDF
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* ==========================================
+   DONNÉES
+========================================== */
+
+let products =
+    JSON.parse(localStorage.getItem("stock_products")) || [];
+
+let movements =
+    JSON.parse(localStorage.getItem("stock_movements")) || [];
+
+let suppliers =
+    JSON.parse(localStorage.getItem("stock_suppliers")) || [];
+
+
+/* ==========================================
+   JOURNAL UTILISATEURS
+========================================== */
+
+let userJournal =
+    JSON.parse(localStorage.getItem("stock_user_journal")) || [];
+
+
+/*
+   Utilisateur actuellement connecté.
+
+   Pour le moment :
+   Admin
+
+   Plus tard, cette variable pourra être
+   automatiquement récupérée depuis le système
+   de connexion Admin / Employé.
+*/
+
+let currentUser =
+    localStorage.getItem("stock_current_user") || "Admin";
+
+
+/* ==========================================
+   ÉDITION DE FACTURE (ÉTAT)
+========================================== */
+
+let currentInvoiceMovementId = null;
+
+let invoiceEditMode = false;
+
+
+/* ==========================================
+   SEUIL D'ALERTE DE PÉREMPTION (JOURS)
+========================================== */
+
+let expiryThresholdDays = 30;
+
+
+/* ==========================================
+   SAUVEGARDE
+========================================== */
+
+function saveData() {
+
+    localStorage.setItem(
+        "stock_products",
+        JSON.stringify(products)
+    );
+
+    localStorage.setItem(
+        "stock_movements",
+        JSON.stringify(movements)
+    );
+
+    localStorage.setItem(
+        "stock_suppliers",
+        JSON.stringify(suppliers)
+    );
+
+    localStorage.setItem(
+        "stock_user_journal",
+        JSON.stringify(userJournal)
+    );
+
+}
+
+
+/* ==========================================
+   AJOUTER UNE ACTION AU JOURNAL
+========================================== */
+
+function addJournal(action, detail) {
+
+    let record = {
+
+        id: Date.now().toString() + Math.random(),
+
+        user: currentUser,
+
+        action: action,
+
+        detail: detail,
+
+        date: new Date().toISOString()
+
+    };
+
+    userJournal.push(record);
+
+    localStorage.setItem(
+        "stock_user_journal",
+        JSON.stringify(userJournal)
+    );
+
+}
+
+
+/* ==========================================
+   AFFICHER UNE SECTION
+========================================== */
+
+function showSection(sectionId, btn) {
+
+    document.querySelectorAll(".section")
+        .forEach(
+            s => s.classList.remove("active")
+        );
+
+    document.getElementById(sectionId)
+        .classList.add("active");
+
+    document.querySelectorAll(".menu button")
+        .forEach(
+            b => b.classList.remove("active")
+        );
+
+    btn.classList.add("active");
+
+    document.getElementById("pageTitle")
+        .textContent = btn.innerText.trim();
+
+    if(sectionId === "userJournal") {
+        renderJournal();
+    }
+
+}
+
+
+/* ==========================================
+   MODALS
+========================================== */
+
+function openModal(id) {
+
+    document.getElementById(id)
+        .classList.add("show");
+
+}
+
+
+function closeModal(id) {
+
+    document.getElementById(id)
+        .classList.remove("show");
+
+}
+
+
+/* ==========================================
+   PRODUITS
+========================================== */
+
+function openProductModal(id = null) {
+
+    document.getElementById("productForm").reset();
+
+    document.getElementById("productId").value = "";
+
+    if(id) {
+
+        let p = products.find(
+            item => item.id === id
+        );
+
+        if(p) {
+
+            document.getElementById("productId").value = p.id;
+
+            document.getElementById("productRef").value =
+                p.ref || "";
+
+            document.getElementById("productName").value =
+                p.name || "";
+
+            document.getElementById("productCategory").value =
+                p.category || "Général";
+
+            document.getElementById("productBrand").value =
+                p.brand || "";
+
+            document.getElementById("productBarcode").value =
+                p.barcode || "";
+
+            document.getElementById("productUnit").value =
+                p.unit || "Pièce";
+
+            document.getElementById("productLocation").value =
+                p.location || "";
+
+            document.getElementById("productSupplier").value =
+                p.supplier || "";
+
+            document.getElementById("productQuantity").value =
+                p.quantity || 0;
+
+            document.getElementById("productThreshold").value =
+                p.threshold ?? 5;
+
+            document.getElementById("productMaxStock").value =
+                p.maxStock || 0;
+
+            document.getElementById("productExpiry").value =
+                p.expiry || "";
+
+            document.getElementById("productBuyPrice").value =
+                p.buyPrice || 0;
+
+            document.getElementById("productSellPrice").value =
+                p.sellPrice || 0;
+
+        }
+
+    }
+
+    toggleExpiryRequirement();
+
+
+    let quantityInput =
+        document.getElementById("productQuantity");
+
+    let quantityNote =
+        document.getElementById("quantityLockNote");
+
+    if(id) {
+
+        quantityInput.disabled = true;
+
+        quantityNote.style.display = "block";
+
+    } else {
+
+        quantityInput.disabled = false;
+
+        quantityNote.style.display = "none";
+
+    }
+
+
+    openModal("productModal");
+
+}
+
+
+/* ==========================================
+   CHAMP DATE D'EXPIRATION SELON LA CATÉGORIE
+========================================== */
+
+function toggleExpiryRequirement() {
+
+    let category =
+        document.getElementById("productCategory").value;
+
+    let expiryLabel =
+        document.getElementById("expiryLabel");
+
+    let expiryInput =
+        document.getElementById("productExpiry");
+
+    if(category === "Alimentaire" || category === "Medicament") {
+
+        expiryLabel.innerHTML =
+            "Date d'expiration <span style='color:#ef4444;'>*</span> (obligatoire pour cette catégorie)";
+
+        expiryInput.required = true;
+
+    } else {
+
+        expiryLabel.textContent =
+            "Date d'expiration";
+
+        expiryInput.required = false;
+
+    }
+
+}
+
+
+/* ==========================================
+   ENREGISTRER PRODUIT
+========================================== */
+
+document.getElementById("productForm")
+.addEventListener("submit", function(e) {
+
+    e.preventDefault();
+
+    let id =
+        document.getElementById("productId").value;
+
+    let data = {
+
+        ref:
+            document.getElementById("productRef").value.trim(),
+
+        name:
+            document.getElementById("productName").value.trim(),
+
+        category:
+            document.getElementById("productCategory").value,
+
+        brand:
+            document.getElementById("productBrand").value.trim(),
+
+        barcode:
+            document.getElementById("productBarcode").value.trim(),
+
+        unit:
+            document.getElementById("productUnit").value,
+
+        location:
+            document.getElementById("productLocation").value.trim(),
+
+        supplier:
+            document.getElementById("productSupplier").value.trim(),
+
+        quantity:
+            Number(document.getElementById("productQuantity").value),
+
+        threshold:
+            Number(document.getElementById("productThreshold").value),
+
+        maxStock:
+            Number(document.getElementById("productMaxStock").value),
+
+        expiry:
+            document.getElementById("productExpiry").value,
+
+        buyPrice:
+            Number(document.getElementById("productBuyPrice").value),
+
+        sellPrice:
+            Number(document.getElementById("productSellPrice").value)
+
+    };
+
+
+    if(
+        (data.category === "Alimentaire" || data.category === "Medicament") &&
+        !data.expiry
+    ) {
+
+        return alert(
+            "Veuillez indiquer une date d'expiration pour cette catégorie de produit."
+        );
+
+    }
+
+
+    if(id) {
+
+        let idx =
+            products.findIndex(
+                p => p.id == id
+            );
+
+        if(idx !== -1) {
+
+            let oldProduct = products[idx];
+
+            products[idx] = {
+                id,
+                ...data
+            };
+
+            addJournal(
+                "Modification",
+                "Modification du produit : " +
+                data.name +
+                " (" +
+                data.ref +
+                ")"
+            );
+
+        }
+
+    } else {
+
+        products.push({
+
+            id: Date.now().toString(),
+
+            ...data
+
+        });
+
+        addJournal(
+            "Ajout",
+            "Ajout du produit : " +
+            data.name +
+            " (" +
+            data.ref +
+            ")"
+        );
+
+    }
+
+
+    saveData();
+
+    closeModal("productModal");
+
+    renderAll();
+
+});
+
+
+/* ==========================================
+   AFFICHER PRODUITS
+========================================== */
+
+function renderProducts() {
+
+    let container =
+        document.getElementById("productsTable");
+
+    let search =
+        document.getElementById("productSearch")
+        .value
+        .toLowerCase()
+        .trim();
+
+    let category =
+        document.getElementById("productCategoryFilter")
+        .value;
+
+    let stockFilter =
+        document.getElementById("productStockFilter")
+        .value;
+
+    container.innerHTML = "";
+
+
+    products
+
+    .filter(p => {
+
+        let searchable = [
+
+            p.name,
+            p.ref,
+            p.brand,
+            p.barcode,
+            p.category,
+            p.supplier,
+            p.location
+
+        ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+
+
+        if(search && !searchable.includes(search)) {
+            return false;
+        }
+
+
+        if(category && p.category !== category) {
+            return false;
+        }
+
+
+        if(stockFilter === "out" && p.quantity !== 0) {
+            return false;
+        }
+
+
+        if(
+            stockFilter === "low" &&
+            !(p.quantity > 0 && p.quantity <= p.threshold)
+        ) {
+            return false;
+        }
+
+
+        if(
+            stockFilter === "normal" &&
+            p.quantity <= p.threshold
+        ) {
+            return false;
+        }
+
+
+        return true;
+
+    })
+
+    .forEach(p => {
+
+        let status =
+            p.quantity <= p.threshold
+            ? "#dc2626"
+            : "#16a34a";
+
+
+        let card =
+            document.createElement("div");
+
+        card.className =
+            "extension-card";
+
+
+        card.innerHTML = `
+
+            <div class="card-left">
+
+                <div class="avatar avatar-blue">
+                    ${p.name.charAt(0).toUpperCase()}
+                </div>
+
+                <div>
+
+                    <div class="card-name">
+
+                        ${p.name}
+
+                        <span class="card-ref">
+                            (${p.ref})
+                        </span>
+
+                    </div>
+
+                    <small style="color:${status}">
+                        ● Stock: ${p.quantity} ${p.unit || ""}
+                    </small>
+
+                    <br>
+
+                    <small style="color:#64748b">
+                        Vente: ${(p.sellPrice || 0).toLocaleString()} DA
+                    </small>
+
+                    ${
+                        p.brand
+                        ? `<br><small style="color:#64748b">
+                            Marque: ${p.brand}
+                          </small>`
+                        : ""
+                    }
+
+                    ${
+                        p.location
+                        ? `<br><small style="color:#64748b">
+                            Emplacement: ${p.location}
+                          </small>`
+                        : ""
+                    }
+
+                    ${
+                        p.expiry
+                        ? `<br><small style="color:#64748b">
+                            Expiration: ${new Date(p.expiry).toLocaleDateString("fr-FR")}
+                          </small>`
+                        : ""
+                    }
+
+                </div>
+
+            </div>
+
+
+            <div>
+
+                <button
+                    class="action-icon"
+                    onclick="openProductModal('${p.id}')"
+                    title="Modifier"
+                >
+                    ✏️
+                </button>
+
+                <button
+                    class="action-icon"
+                    onclick="deleteProduct('${p.id}')"
+                    title="Supprimer"
+                >
+                    🗑️
+                </button>
+
+            </div>
+
+        `;
+
+        container.appendChild(card);
+
+    });
+
+}
+
+
+/* ==========================================
+   SUPPRIMER PRODUIT
+========================================== */
+
+function deleteProduct(id) {
+
+    let p =
+        products.find(
+            item => item.id === id
+        );
+
+    if(!p) return;
+
+
+    if(confirm("Supprimer ce produit ?")) {
+
+        products =
+            products.filter(
+                item => item.id !== id
+            );
+
+
+        addJournal(
+            "Suppression",
+            "Suppression du produit : " +
+            p.name +
+            " (" +
+            p.ref +
+            ")"
+        );
+
+
+        saveData();
+
+        renderAll();
+
+    }
+
+}
+
+
+/* ==========================================
+   MOUVEMENTS
+========================================== */
+
+function openMovementModal() {
+
+    let select =
+        document.getElementById("movementProduct");
+
+    select.innerHTML = "";
+
+
+    products.forEach(p => {
+
+        select.innerHTML += `
+
+            <option value="${p.id}">
+                ${p.name} (Stock: ${p.quantity})
+            </option>
+
+        `;
+
+    });
+
+
+    if(products.length === 0) {
+
+        return alert(
+            "Ajoutez d'abord des produits !"
+        );
+
+    }
+
+
+    document.getElementById("movementForm").reset();
+
+    document.getElementById("movementType").value =
+        "entrée";
+
+    updateMovementMode();
+
+    openModal("movementModal");
+
+}
+
+
+/* ==========================================
+   MODE MOUVEMENT
+========================================== */
+
+function updateMovementMode() {
+
+    let type =
+        document.getElementById("movementType").value;
+
+    let single =
+        document.getElementById("singleMovementProduct");
+
+    let multi =
+        document.getElementById("multiSaleContainer");
+
+
+    if(type === "sortie") {
+
+        single.style.display = "none";
+
+        multi.style.display = "block";
+
+        document.getElementById("saleItems")
+            .innerHTML = "";
+
+        addSaleItem();
+
+    } else {
+
+        single.style.display = "block";
+
+        multi.style.display = "none";
+
+    }
+
+}
+
+
+/* ==========================================
+   AJOUT PRODUIT À UNE VENTE
+========================================== */
+
+function addSaleItem() {
+
+    let container =
+        document.getElementById("saleItems");
+
+
+    let row =
+        document.createElement("div");
+
+    row.className = "sale-item";
+
+
+    let options = products.map(p => {
+
+        return `
+            <option value="${p.id}">
+                ${p.name} — Stock: ${p.quantity}
+            </option>
+        `;
+
+    }).join("");
+
+
+    row.innerHTML = `
+
+        <div class="sale-item-grid">
+
+            <select
+                class="sale-product"
+                onchange="calculateSaleTotal()"
+            >
+                ${options}
+            </select>
+
+            <input
+                type="number"
+                class="sale-quantity"
+                min="1"
+                value="1"
+                onchange="calculateSaleTotal()"
+                oninput="calculateSaleTotal()"
+            >
+
+            <div
+                class="sale-line-total"
+                style="
+                    font-size:12px;
+                    font-weight:600;
+                    text-align:right;
+                "
+            >
+                0 DA
+            </div>
+
+            <button
+                type="button"
+                class="action-icon"
+                onclick="removeSaleItem(this)"
+                title="Supprimer"
+            >
+                🗑️
+            </button>
+
+        </div>
+
+    `;
+
+
+    container.appendChild(row);
+
+    calculateSaleTotal();
+
+}
+
+
+/* ==========================================
+   SUPPRIMER LIGNE VENTE
+========================================== */
+
+function removeSaleItem(button) {
+
+    let rows =
+        document.querySelectorAll(".sale-item");
+
+
+    if(rows.length <= 1) {
+
+        return alert(
+            "La vente doit contenir au moins un produit."
+        );
+
+    }
+
+
+    button.closest(".sale-item").remove();
+
+    calculateSaleTotal();
+
+}
+
+
+/* ==========================================
+   CALCUL VENTE
+========================================== */
+
+function calculateSaleTotal() {
+
+    let total = 0;
+
+
+    document.querySelectorAll(".sale-item")
+    .forEach(row => {
+
+        let productId =
+            row.querySelector(".sale-product").value;
+
+        let qty =
+            Number(
+                row.querySelector(".sale-quantity").value
+            );
+
+
+        let p =
+            products.find(
+                item => item.id === productId
+            );
+
+
+        let lineTotal =
+            p
+            ? qty * p.sellPrice
+            : 0;
+
+
+        row.querySelector(".sale-line-total")
+            .textContent =
+            lineTotal.toLocaleString() + " DA";
+
+
+        total += lineTotal;
+
+    });
+
+
+    document.getElementById("saleGrandTotal")
+        .textContent =
+        total.toLocaleString() + " DA";
+
+}
+
+
+/* ==========================================
+   ENREGISTRER MOUVEMENT
+========================================== */
+
+document.getElementById("movementForm")
+.addEventListener("submit", function(e) {
+
+    e.preventDefault();
+
+
+    let type =
+        document.getElementById("movementType").value;
+
+    let party =
+        document.getElementById("movementParty").value
+        || "Non spécifié";
+
+    let reason =
+        document.getElementById("movementReason").value;
+
+
+    /* ============================
+       SORTIE / VENTE MULTI-PRODUITS
+    ============================ */
+
+    if(type === "sortie") {
+
+        let rows =
+            document.querySelectorAll(".sale-item");
+
+
+        if(rows.length === 0) {
+
+            return alert(
+                "Ajoutez au moins un produit."
+            );
+
+        }
+
+
+        let saleItems = [];
+
+        let totalSale = 0;
+
+
+        for(let row of rows) {
+
+            let productId =
+                row.querySelector(".sale-product").value;
+
+            let qty =
+                Number(
+                    row.querySelector(".sale-quantity").value
+                );
+
+
+            let p =
+                products.find(
+                    item => item.id === productId
+                );
+
+
+            if(!p) continue;
+
+
+            if(qty < 1) {
+
+                return alert(
+                    "La quantité doit être supérieure à 0."
+                );
+
+            }
+
+
+            if(qty > p.quantity) {
+
+                return alert(
+                    "Stock insuffisant pour : " +
+                    p.name
+                );
+
+            }
+
+
+            saleItems.push({
+
+                productId: productId,
+
+                quantity: qty,
+
+                unitPrice: p.sellPrice,
+
+                totalPrice: qty * p.sellPrice
+
+            });
+
+
+            totalSale +=
+                qty * p.sellPrice;
+
+        }
+
+
+        if(saleItems.length === 0) {
+
+            return alert(
+                "Aucun produit valide."
+            );
+
+        }
+
+
+        /*
+           Une seule facture pour toute la vente.
+        */
+
+        let invoiceNum =
+            "FAC-" +
+            Math.floor(
+                100000 + Math.random() * 900000
+            );
+
+
+        let movementRecord = {
+
+            id:
+                Date.now().toString(),
+
+            invoiceNum:
+                invoiceNum,
+
+            type:
+                "sortie",
+
+            items:
+                saleItems,
+
+            quantity:
+                saleItems.reduce(
+                    (sum, item) =>
+                        sum + item.quantity,
+                    0
+                ),
+
+            totalPrice:
+                totalSale,
+
+            party:
+                party,
+
+            reason:
+                reason,
+
+            date:
+                new Date().toISOString()
+
+        };
+
+
+        /*
+           Mise à jour du stock
+        */
+
+        saleItems.forEach(item => {
+
+            let p =
+                products.find(
+                    product =>
+                        product.id === item.productId
+                );
+
+            if(p) {
+
+                p.quantity -=
+                    item.quantity;
+
+            }
+
+        });
+
+
+        movements.push(
+            movementRecord
+        );
+
+
+        addJournal(
+            "Stock",
+            "Vente multi-produits " +
+            invoiceNum +
+            " — " +
+            saleItems.length +
+            " produit(s), total " +
+            totalSale.toLocaleString() +
+            " DA"
+        );
+
+
+        saveData();
+
+        closeModal("movementModal");
+
+        renderAll();
+
+        viewInvoice(
+            movementRecord.id
+        );
+
+        return;
+
+    }
+
+
+    /* ============================
+       ENTRÉE SIMPLE
+    ============================ */
+
+    let pId =
+        document.getElementById("movementProduct").value;
+
+    let qty =
+        Number(
+            document.getElementById("movementQuantity").value
+        );
+
+
+    let p =
+        products.find(
+            item => item.id === pId
+        );
+
+
+    if(!p) return;
+
+
+    if(qty < 1) {
+
+        return alert(
+            "La quantité doit être supérieure à 0."
+        );
+
+    }
+
+
+    p.quantity += qty;
+
+
+    let unitPrice =
+        p.buyPrice;
+
+
+    let invoiceNum =
+        "BE-" +
+        Math.floor(
+            100000 + Math.random() * 900000
+        );
+
+
+    let movementRecord = {
+
+        id:
+            Date.now().toString(),
+
+        invoiceNum:
+            invoiceNum,
+
+        productId:
+            pId,
+
+        type:
+            "entrée",
+
+        quantity:
+            qty,
+
+        unitPrice:
+            unitPrice,
+
+        totalPrice:
+            qty * unitPrice,
+
+        party:
+            party,
+
+        reason:
+            reason,
+
+        date:
+            new Date().toISOString()
+
+    };
+
+
+    movements.push(
+        movementRecord
+    );
+
+
+    addJournal(
+        "Stock",
+        "Entrée de stock : " +
+        p.name +
+        " × " +
+        qty +
+        " — " +
+        invoiceNum
+    );
+
+
+    saveData();
+
+    closeModal("movementModal");
+
+    renderAll();
+
+    viewInvoice(
+        movementRecord.id
+    );
+
+});
+
+
+/* ==========================================
+   FOURNISSEURS
+========================================== */
+
+function openSupplierModal() {
+
+    document.getElementById("supplierForm")
+        .reset();
+
+    openModal("supplierModal");
+
+}
+
+
+document.getElementById("supplierForm")
+.addEventListener("submit", function(e) {
+
+    e.preventDefault();
+
+
+    let name =
+        document.getElementById("supplierName").value;
+
+    let phone =
+        document.getElementById("supplierPhone").value;
+
+    let email =
+        document.getElementById("supplierEmail").value;
+
+
+    suppliers.push({
+
+        id:
+            Date.now().toString(),
+
+        name:
+            name,
+
+        phone:
+            phone,
+
+        email:
+            email
+
+    });
+
+
+    addJournal(
+        "Ajout",
+        "Ajout du fournisseur : " +
+        name
+    );
+
+
+    saveData();
+
+    closeModal("supplierModal");
+
+    renderSuppliers();
+
+});
+
+
+/* ==========================================
+   AFFICHER FOURNISSEURS
+========================================== */
+
+function renderSuppliers() {
+
+    let tbody =
+        document.getElementById("suppliersTable");
+
+    tbody.innerHTML = "";
+
+
+    suppliers.forEach(s => {
+
+        tbody.innerHTML += `
+
+            <tr>
+
+                <td>
+                    ${s.name}
+                </td>
+
+                <td>
+                    ${s.phone}
+                </td>
+
+                <td>
+                    ${s.email}
+                </td>
+
+                <td>
+
+                    <button
+                        class="action-icon"
+                        onclick="deleteSupplier('${s.id}')"
+                    >
+                        🗑️
+                    </button>
+
+                </td>
+
+            </tr>
+
+        `;
+
+    });
+
+}
+
+
+/* ==========================================
+   SUPPRIMER FOURNISSEUR
+========================================== */
+
+function deleteSupplier(id) {
+
+    let supplier =
+        suppliers.find(
+            s => s.id === id
+        );
+
+
+    if(!supplier) return;
+
+
+    if(
+        confirm(
+            "Supprimer ce fournisseur ?"
+        )
+    ) {
+
+        suppliers =
+            suppliers.filter(
+                s => s.id !== id
+            );
+
+
+        addJournal(
+            "Suppression",
+            "Suppression du fournisseur : " +
+            supplier.name
+        );
+
+
+        saveData();
+
+        renderSuppliers();
+
+    }
+
+}
+
+
+/* ==========================================
+   DASHBOARD
+========================================== */
+
+function renderDashboard() {
+
+    document.getElementById("totalProducts")
+        .textContent =
+        products.length;
+
+
+    document.getElementById("totalQuantity")
+        .textContent =
+        products.reduce(
+            (a, b) =>
+                a + Number(b.quantity || 0),
+            0
+        );
+
+
+    document.getElementById("lowStock")
+        .textContent =
+        products.filter(
+            p =>
+                p.quantity <= p.threshold
+        ).length;
+
+
+    let val =
+        products.reduce(
+            (a, b) =>
+                a +
+                (
+                    Number(b.quantity || 0) *
+                    Number(b.buyPrice || 0)
+                ),
+            0
+        );
+
+
+    document.getElementById("stockValue")
+        .textContent =
+        val.toLocaleString() +
+        " DA";
+
+
+    /* ALERTES DE STOCK */
+
+    let alertPanel =
+        document.getElementById("stockAlertPanel");
+
+    let alerts =
+        document.getElementById("stockAlerts");
+
+
+    let lowItems =
+        products.filter(
+            p =>
+                p.quantity <= p.threshold
+        );
+
+
+    if(lowItems.length === 0) {
+
+        alertPanel.style.display =
+            "none";
+
+        alerts.innerHTML =
+            "";
+
+    } else {
+
+        alertPanel.style.display =
+            "block";
+
+        alerts.innerHTML =
+            "";
+
+
+        lowItems.forEach(p => {
+
+            alerts.innerHTML += `
+
+                <div
+                    style="
+                        color:#b45309;
+                        margin-bottom:5px;
+                    "
+                >
+
+                    ⚠️
+
+                    <strong>
+                        ${p.name}
+                    </strong>
+
+                    : Stock (${p.quantity})
+                    sous le seuil de
+                    ${p.threshold} !
+
+                </div>
+
+            `;
+
+        });
+
+    }
+
+
+    /* ALERTES DE PÉREMPTION */
+
+    let expiryPanel =
+        document.getElementById("expiryAlertPanel");
+
+    let expiryAlerts =
+        document.getElementById("expiryAlerts");
+
+
+    let todayDate =
+        new Date();
+
+    todayDate.setHours(0, 0, 0, 0);
+
+
+    let expiringItems =
+        products.filter(p => {
+
+            if(!p.expiry) return false;
+
+            let expDate =
+                new Date(p.expiry);
+
+            let diffDays =
+                Math.ceil(
+                    (expDate - todayDate) /
+                    (1000 * 60 * 60 * 24)
+                );
+
+            return diffDays <= expiryThresholdDays;
+
+        });
+
+
+    if(expiringItems.length === 0) {
+
+        expiryPanel.style.display =
+            "none";
+
+        expiryAlerts.innerHTML =
+            "";
+
+    } else {
+
+        expiryPanel.style.display =
+            "block";
+
+        expiryAlerts.innerHTML =
+            "";
+
+
+        expiringItems
+
+        .sort(
+            (a, b) =>
+                new Date(a.expiry) - new Date(b.expiry)
+        )
+
+        .forEach(p => {
+
+            let expDate =
+                new Date(p.expiry);
+
+            let diffDays =
+                Math.ceil(
+                    (expDate - todayDate) /
+                    (1000 * 60 * 60 * 24)
+                );
+
+
+            let message =
+                diffDays < 0
+                ? "Produit expiré depuis " + Math.abs(diffDays) + " jour(s) !"
+                : diffDays === 0
+                ? "Expire aujourd'hui !"
+                : "Expire dans " + diffDays + " jour(s) (" +
+                  expDate.toLocaleDateString("fr-FR") + ")";
+
+
+            let color =
+                diffDays < 0
+                ? "#b91c1c"
+                : "#b45309";
+
+
+            expiryAlerts.innerHTML += `
+
+                <div
+                    style="
+                        color:${color};
+                        margin-bottom:5px;
+                    "
+                >
+
+                    ⏳
+
+                    <strong>
+                        ${p.name}
+                    </strong>
+
+                    (${p.category}) :
+                    ${message}
+
+                </div>
+
+            `;
+
+        });
+
+    }
+
+
+    /* DERNIERS MOUVEMENTS */
+
+    let mBody =
+        document.getElementById(
+            "dashboardMovements"
+        );
+
+    mBody.innerHTML =
+        "";
+
+
+    [...movements]
+    .reverse()
+    .slice(0, 5)
+    .forEach(m => {
+
+        let p =
+            products.find(
+                item =>
+                    item.id === m.productId
+            );
+
+
+        let productName =
+            p
+            ? p.name
+            : (
+                m.items
+                ? m.items.map(item => {
+
+                    let product =
+                        products.find(
+                            p =>
+                                p.id === item.productId
+                        );
+
+                    return product
+                        ? product.name
+                        : "Produit supprimé";
+
+                }).join(", ")
+                : "Produit supprimé"
+            );
+
+
+        mBody.innerHTML += `
+
+            <tr>
+
+                <td>
+                    ${new Date(m.date)
+                        .toLocaleDateString("fr-FR")}
+                </td>
+
+                <td>
+                    ${productName}
+                </td>
+
+                <td>
+                    ${m.type}
+                </td>
+
+                <td>
+                    ${m.quantity || "-"}
+                </td>
+
+                <td>
+
+                    <button
+                        class="btn btn-secondary"
+                        style="
+                            padding:3px 8px;
+                            font-size:11px;
+                        "
+                        onclick="viewInvoice('${m.id}')"
+                    >
+                        🖨️ Facture
+                    </button>
+
+                </td>
+
+            </tr>
+
+        `;
+
+    });
+
+}
+
+
+/* ==========================================
+   HISTORIQUE
+========================================== */
+
+function renderHistory() {
+
+    let tbody =
+        document.getElementById(
+            "historyTable"
+        );
+
+
+    let search =
+        document.getElementById(
+            "historySearch"
+        ).value
+        .toLowerCase()
+        .trim();
+
+
+    let typeFilter =
+        document.getElementById(
+            "historyTypeFilter"
+        ).value;
+
+
+    let productFilter =
+        document.getElementById(
+            "historyProductFilter"
+        ).value;
+
+
+    let dateFrom =
+        document.getElementById(
+            "historyDateFrom"
+        ).value;
+
+
+    let dateTo =
+        document.getElementById(
+            "historyDateTo"
+        ).value;
+
+
+    tbody.innerHTML =
+        "";
+
+
+    /*
+       Mise à jour de la liste produits
+    */
+
+    let productSelect =
+        document.getElementById(
+            "historyProductFilter"
+        );
+
+
+    let selectedProduct =
+        productSelect.value;
+
+
+    productSelect.innerHTML =
+        `<option value="">Tous les produits</option>`;
+
+
+    products.forEach(p => {
+
+        productSelect.innerHTML += `
+
+            <option value="${p.id}">
+                ${p.name}
+            </option>
+
+        `;
+
+    });
+
+
+    productSelect.value =
+        selectedProduct;
+
+
+    [...movements]
+    .reverse()
+    .forEach(m => {
+
+        let date =
+            new Date(m.date);
+
+
+        let dateString =
+            date.toISOString().split("T")[0];
+
+
+        if(dateFrom && dateString < dateFrom) {
+            return;
+        }
+
+
+        if(dateTo && dateString > dateTo) {
+            return;
+        }
+
+
+        if(
+            typeFilter &&
+            m.type !== typeFilter
+        ) {
+            return;
+        }
+
+
+        let productNames = "";
+
+        let containsProduct = false;
+
+
+        if(m.items) {
+
+            m.items.forEach(item => {
+
+                let p =
+                    products.find(
+                        product =>
+                            product.id === item.productId
+                    );
+
+
+                if(
+                    productFilter &&
+                    item.productId === productFilter
+                ) {
+                    containsProduct = true;
+                }
+
+
+                productNames +=
+                    (
+                        p
+                        ? p.name
+                        : "Produit supprimé"
+                    ) +
+                    " × " +
+                    item.quantity +
+                    ", ";
+
+            });
+
+            productNames =
+                productNames.replace(/, $/, "");
+
+        } else {
+
+            let p =
+                products.find(
+                    product =>
+                        product.id === m.productId
+                );
+
+
+            productNames =
+                p
+                ? p.name
+                : "Produit supprimé";
+
+
+            if(
+                productFilter &&
+                m.productId === productFilter
+            ) {
+                containsProduct = true;
+            }
+
+        }
+
+
+        if(
+            productFilter &&
+            !containsProduct
+        ) {
+            return;
+        }
+
+
+        let searchable =
+            (
+                m.invoiceNum +
+                " " +
+                productNames +
+                " " +
+                m.type +
+                " " +
+                m.party +
+                " " +
+                m.reason
+            )
+            .toLowerCase();
+
+
+        if(
+            search &&
+            !searchable.includes(search)
+        ) {
+            return;
+        }
+
+
+        tbody.innerHTML += `
+
+            <tr>
+
+                <td>
+                    <strong>
+                        ${m.invoiceNum || "-"}
+                    </strong>
+                </td>
+
+                <td>
+                    ${date.toLocaleString("fr-FR")}
+                </td>
+
+                <td>
+                    ${productNames}
+                </td>
+
+                <td>
+
+                    <span
+                        style="
+                            color:${
+                                m.type === "entrée"
+                                ? "#10b981"
+                                : "#ef4444"
+                            };
+                            font-weight:bold;
+                        "
+                    >
+                        ${m.type}
+                    </span>
+
+                </td>
+
+                <td>
+                    ${m.quantity || "-"}
+                </td>
+
+                <td>
+                    ${(m.totalPrice || 0)
+                        .toLocaleString()}
+                    DA
+                </td>
+
+                <td>
+                    ${m.party || "-"}
+                </td>
+
+                <td>
+
+                    <button
+                        class="btn btn-primary"
+                        style="
+                            padding:4px 8px;
+                            font-size:12px;
+                        "
+                        onclick="viewInvoice('${m.id}')"
+                    >
+                        🖨️ Facture
+                    </button>
+
+                </td>
+
+            </tr>
+
+        `;
+
+    });
+
+}
+
+
+/* ==========================================
+   RESET FILTRES HISTORIQUE
+========================================== */
+
+function resetHistoryFilters() {
+
+    document.getElementById("historySearch")
+        .value = "";
+
+    document.getElementById("historyTypeFilter")
+        .value = "";
+
+    document.getElementById("historyProductFilter")
+        .value = "";
+
+    document.getElementById("historyDateFrom")
+        .value = "";
+
+    document.getElementById("historyDateTo")
+        .value = "";
+
+    renderHistory();
+
+}
+
+
+/* ==========================================
+   FACTURE — AFFICHAGE
+========================================== */
+
+function viewInvoice(movementId) {
+
+    currentInvoiceMovementId =
+        movementId;
+
+    invoiceEditMode =
+        false;
+
+
+    let m =
+        movements.find(
+            item =>
+                item.id === movementId
+        );
+
+
+    if(!m) return;
+
+
+    document.getElementById("invDocType")
+        .textContent =
+        m.type === "entrée"
+        ? "BON D'ENTRÉE"
+        : "FACTURE DE VENTE";
+
+
+    document.getElementById("invNumber")
+        .textContent =
+        "N° " +
+        (
+            m.invoiceNum ||
+            m.id
+        );
+
+
+    document.getElementById("invDate")
+        .textContent =
+        new Date(m.date)
+            .toLocaleString("fr-FR");
+
+
+    document.getElementById("invParty")
+        .textContent =
+        m.party ||
+        "Client / Fournisseur général";
+
+
+    document.getElementById("invReason")
+        .textContent =
+        m.reason ||
+        "Aucun";
+
+
+    let itemsBody =
+        document.getElementById("invItems");
+
+
+    itemsBody.innerHTML =
+        "";
+
+
+    let totalGeneral = 0;
+
+
+    /*
+       VENTE MULTI-PRODUITS
+    */
+
+    if(m.items) {
+
+        m.items.forEach(item => {
+
+            let p =
+                products.find(
+                    product =>
+                        product.id === item.productId
+                );
+
+
+            let unitPrice =
+                item.unitPrice || 0;
+
+
+            let totalPrice =
+                item.totalPrice ||
+                item.quantity * unitPrice;
+
+
+            totalGeneral +=
+                totalPrice;
+
+
+            itemsBody.innerHTML += `
+
+                <tr>
+
+                    <td>
+                        ${p ? p.ref : "-"}
+                    </td>
+
+                    <td>
+                        ${p ? p.name : "Inconnu"}
+                    </td>
+
+                    <td>
+                        ${unitPrice.toLocaleString()}
+                        DA
+                    </td>
+
+                    <td>
+                        ${item.quantity}
+                    </td>
+
+                    <td>
+                        ${totalPrice.toLocaleString()}
+                        DA
+                    </td>
+
+                </tr>
+
+            `;
+
+        });
+
+    }
+
+    /*
+       MOUVEMENT SIMPLE
+    */
+
+    else {
+
+        let p =
+            products.find(
+                item =>
+                    item.id === m.productId
+            );
+
+
+        let unitPrice =
+            m.unitPrice ||
+            (
+                m.type === "entrée"
+                ? (p ? p.buyPrice : 0)
+                : (p ? p.sellPrice : 0)
+            );
+
+
+        let totalPrice =
+            m.totalPrice ||
+            (
+                m.quantity *
+                unitPrice
+            );
+
+
+        totalGeneral =
+            totalPrice;
+
+
+        itemsBody.innerHTML = `
+
+            <tr>
+
+                <td>
+                    ${p ? p.ref : "-"}
+                </td>
+
+                <td>
+                    ${p ? p.name : "Inconnu"}
+                </td>
+
+                <td>
+                    ${unitPrice.toLocaleString()}
+                    DA
+                </td>
+
+                <td>
+                    ${m.quantity}
+                </td>
+
+                <td>
+                    ${totalPrice.toLocaleString()}
+                    DA
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+
+    document.getElementById("invTotalAmount")
+        .textContent =
+        totalGeneral.toLocaleString() +
+        " DA";
+
+
+    document.getElementById("editInvoiceBtn")
+        .style.display = "inline-block";
+
+    document.getElementById("saveInvoiceBtn")
+        .style.display = "none";
+
+    document.getElementById("cancelInvoiceEditBtn")
+        .style.display = "none";
+
+    document.getElementById("printInvoiceBtn")
+        .style.display = "inline-block";
+
+
+    openModal("invoiceModal");
+
+}
+
+
+/* ==========================================
+   FACTURE — PASSAGE EN MODE ÉDITION
+========================================== */
+
+function toggleInvoiceEdit() {
+
+    let m =
+        movements.find(
+            item =>
+                item.id === currentInvoiceMovementId
+        );
+
+    if(!m) return;
+
+
+    invoiceEditMode =
+        true;
+
+
+    /* Numéro de facture */
+
+    document.getElementById("invNumber").innerHTML =
+        `N° <input
+            id="editInvoiceNumber"
+            type="text"
+            value="${(m.invoiceNum || m.id).toString().replace(/"/g, '&quot;')}"
+            style="padding:4px; border:1px solid #cbd5e1; border-radius:4px; font-size:12px; width:140px;"
+        >`;
+
+
+    /* Date */
+
+    let dateValue =
+        new Date(m.date).toISOString().slice(0, 16);
+
+    document.getElementById("invDate").innerHTML =
+        `<input
+            id="editInvoiceDate"
+            type="datetime-local"
+            value="${dateValue}"
+            style="padding:4px; border:1px solid #cbd5e1; border-radius:4px; font-size:12px;"
+        >`;
+
+
+    /* Partie prenante */
+
+    document.getElementById("invParty").innerHTML =
+        `<input
+            id="editInvoiceParty"
+            type="text"
+            value="${(m.party || "").replace(/"/g, '&quot;')}"
+            style="padding:4px; border:1px solid #cbd5e1; border-radius:4px; font-size:12px; width:220px;"
+        >`;
+
+
+    /* Motif */
+
+    document.getElementById("invReason").innerHTML =
+        `<input
+            id="editInvoiceReason"
+            type="text"
+            value="${(m.reason || "").replace(/"/g, '&quot;')}"
+            style="padding:4px; border:1px solid #cbd5e1; border-radius:4px; font-size:12px; width:220px;"
+        >`;
+
+
+    /* Articles */
+
+    let itemsBody =
+        document.getElementById("invItems");
+
+    itemsBody.innerHTML = "";
+
+
+    let options =
+        products.map(p => {
+            return `<option value="${p.id}">${p.name} (Stock: ${p.quantity})</option>`;
+        }).join("");
+
+
+    if(m.items) {
+
+        m.items.forEach((item, index) => {
+
+            let row =
+                document.createElement("tr");
+
+            row.innerHTML = `
+
+                <td colspan="2">
+                    <select
+                        class="edit-item-product"
+                        style="width:100%; padding:5px; border:1px solid #cbd5e1; border-radius:4px; font-size:12px;"
+                    >
+                        ${options}
+                    </select>
+                </td>
+
+                <td>
+                    <input
+                        type="number"
+                        class="edit-item-price"
+                        min="0"
+                        value="${item.unitPrice}"
+                        style="width:80px; padding:5px; border:1px solid #cbd5e1; border-radius:4px; font-size:12px;"
+                    >
+                </td>
+
+                <td>
+                    <input
+                        type="number"
+                        class="edit-item-quantity"
+                        min="1"
+                        value="${item.quantity}"
+                        style="width:60px; padding:5px; border:1px solid #cbd5e1; border-radius:4px; font-size:12px;"
+                    >
+                </td>
+
+                <td>
+                    <button
+                        type="button"
+                        class="action-icon"
+                        onclick="this.closest('tr').remove()"
+                        title="Supprimer"
+                    >
+                        🗑️
+                    </button>
+                </td>
+
+            `;
+
+            itemsBody.appendChild(row);
+
+            row.querySelector(".edit-item-product").value =
+                item.productId;
+
+        });
+
+    } else {
+
+        let p =
+            products.find(
+                product => product.id === m.productId
+            );
+
+        let unitPrice =
+            m.unitPrice || (p ? p.buyPrice : 0);
+
+        let row =
+            document.createElement("tr");
+
+        row.innerHTML = `
+
+            <td colspan="2">
+                <select
+                    id="editSingleProduct"
+                    style="width:100%; padding:5px; border:1px solid #cbd5e1; border-radius:4px; font-size:12px;"
+                >
+                    ${options}
+                </select>
+            </td>
+
+            <td>
+                <input
+                    type="number"
+                    id="editSinglePrice"
+                    min="0"
+                    value="${unitPrice}"
+                    style="width:80px; padding:5px; border:1px solid #cbd5e1; border-radius:4px; font-size:12px;"
+                >
+            </td>
+
+            <td>
+                <input
+                    type="number"
+                    id="editSingleQuantity"
+                    min="1"
+                    value="${m.quantity}"
+                    style="width:60px; padding:5px; border:1px solid #cbd5e1; border-radius:4px; font-size:12px;"
+                >
+            </td>
+
+            <td></td>
+
+        `;
+
+        itemsBody.appendChild(row);
+
+        row.querySelector("#editSingleProduct").value =
+            m.productId;
+
+    }
+
+
+    /* Bouton ajouter un article (vente multi-produits uniquement) */
+
+    if(m.items) {
+
+        let addRow =
+            document.createElement("tr");
+
+        addRow.id =
+            "addEditItemRow";
+
+        addRow.innerHTML = `
+
+            <td colspan="5">
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    onclick="addEditItemRow()"
+                    style="font-size:12px; padding:5px 10px;"
+                >
+                    + Ajouter un article
+                </button>
+            </td>
+
+        `;
+
+        itemsBody.appendChild(addRow);
+
+    }
+
+
+    document.getElementById("invTotalAmount")
+        .textContent =
+        "Sera recalculé à l'enregistrement";
+
+
+    document.getElementById("editInvoiceBtn")
+        .style.display = "none";
+
+    document.getElementById("saveInvoiceBtn")
+        .style.display = "inline-block";
+
+    document.getElementById("cancelInvoiceEditBtn")
+        .style.display = "inline-block";
+
+    document.getElementById("printInvoiceBtn")
+        .style.display = "none";
+
+}
+
+
+/* ==========================================
+   FACTURE — AJOUTER UNE LIGNE EN ÉDITION
+========================================== */
+
+function addEditItemRow() {
+
+    let itemsBody =
+        document.getElementById("invItems");
+
+    let addRow =
+        document.getElementById("addEditItemRow");
+
+    let options =
+        products.map(p => {
+            return `<option value="${p.id}">${p.name} (Stock: ${p.quantity})</option>`;
+        }).join("");
+
+    let newRow =
+        document.createElement("tr");
+
+    newRow.innerHTML = `
+
+        <td colspan="2">
+            <select
+                class="edit-item-product"
+                style="width:100%; padding:5px; border:1px solid #cbd5e1; border-radius:4px; font-size:12px;"
+            >
+                ${options}
+            </select>
+        </td>
+
+        <td>
+            <input
+                type="number"
+                class="edit-item-price"
+                min="0"
+                value="0"
+                style="width:80px; padding:5px; border:1px solid #cbd5e1; border-radius:4px; font-size:12px;"
+            >
+        </td>
+
+        <td>
+            <input
+                type="number"
+                class="edit-item-quantity"
+                min="1"
+                value="1"
+                style="width:60px; padding:5px; border:1px solid #cbd5e1; border-radius:4px; font-size:12px;"
+            >
+        </td>
+
+        <td>
+            <button
+                type="button"
+                class="action-icon"
+                onclick="this.closest('tr').remove()"
+                title="Supprimer"
+            >
+                🗑️
+            </button>
+        </td>
+
+    `;
+
+    itemsBody.insertBefore(newRow, addRow);
+
+}
+
+
+/* ==========================================
+   FACTURE — ANNULER L'ÉDITION
+========================================== */
+
+function cancelInvoiceEdit() {
+
+    invoiceEditMode =
+        false;
+
+    viewInvoice(
+        currentInvoiceMovementId
+    );
+
+}
+
+
+/* ==========================================
+   FACTURE — ENREGISTRER LES MODIFICATIONS
+========================================== */
+
+function saveInvoiceEdits() {
+
+    let m =
+        movements.find(
+            item =>
+                item.id === currentInvoiceMovementId
+        );
+
+    if(!m) return;
+
+
+    let newInvoiceNum =
+        document.getElementById("editInvoiceNumber").value.trim();
+
+    let newDateValue =
+        document.getElementById("editInvoiceDate").value;
+
+    let newParty =
+        document.getElementById("editInvoiceParty").value.trim();
+
+    let newReason =
+        document.getElementById("editInvoiceReason").value.trim();
+
+
+    if(!newDateValue) {
+
+        return alert(
+            "Veuillez indiquer une date valide."
+        );
+
+    }
+
+
+    /*
+       Annuler l'effet de l'ancien mouvement sur le stock
+       avant d'appliquer les nouvelles valeurs.
+    */
+
+    if(m.items) {
+
+        m.items.forEach(item => {
+
+            let p =
+                products.find(
+                    product => product.id === item.productId
+                );
+
+            if(p) {
+                p.quantity += item.quantity;
+            }
+
+        });
+
+    } else {
+
+        let p =
+            products.find(
+                product => product.id === m.productId
+            );
+
+        if(p) {
+
+            if(m.type === "entrée") {
+                p.quantity -= m.quantity;
+            } else {
+                p.quantity += m.quantity;
+            }
+
+        }
+
+    }
+
+
+    /* VENTE MULTI-PRODUITS */
+
+    if(m.items) {
+
+        let newItems = [];
+
+        let totalSale = 0;
+
+
+        document.getElementById("invItems")
+        .querySelectorAll("tr")
+        .forEach(row => {
+
+            if(row.id === "addEditItemRow") return;
+
+
+            let productSelect =
+                row.querySelector(".edit-item-product");
+
+            let priceInput =
+                row.querySelector(".edit-item-price");
+
+            let qtyInput =
+                row.querySelector(".edit-item-quantity");
+
+            if(!productSelect || !priceInput || !qtyInput) return;
+
+
+            let productId =
+                productSelect.value;
+
+            let unitPrice =
+                Number(priceInput.value);
+
+            let qty =
+                Number(qtyInput.value);
+
+            let p =
+                products.find(
+                    product => product.id === productId
+                );
+
+            if(!p || qty < 1) return;
+
+
+            newItems.push({
+
+                productId: productId,
+
+                quantity: qty,
+
+                unitPrice: unitPrice,
+
+                totalPrice: qty * unitPrice
+
+            });
+
+
+            totalSale +=
+                qty * unitPrice;
+
+        });
+
+
+        if(newItems.length === 0) {
+
+            /* Restaurer le stock avant d'annuler l'opération */
+
+            m.items.forEach(item => {
+
+                let p =
+                    products.find(
+                        product => product.id === item.productId
+                    );
+
+                if(p) {
+                    p.quantity -= item.quantity;
+                }
+
+            });
+
+            return alert(
+                "La facture doit contenir au moins un article valide."
+            );
+
+        }
+
+
+        /* Vérifier la disponibilité du stock */
+
+        for(let item of newItems) {
+
+            let p =
+                products.find(
+                    product => product.id === item.productId
+                );
+
+            if(p && item.quantity > p.quantity) {
+
+                m.items.forEach(oldItem => {
+
+                    let op =
+                        products.find(
+                            product => product.id === oldItem.productId
+                        );
+
+                    if(op) {
+                        op.quantity -= oldItem.quantity;
+                    }
+
+                });
+
+                return alert(
+                    "Stock insuffisant pour : " + p.name
+                );
+
+            }
+
+        }
+
+
+        /* Appliquer les nouvelles quantités */
+
+        newItems.forEach(item => {
+
+            let p =
+                products.find(
+                    product => product.id === item.productId
+                );
+
+            if(p) {
+                p.quantity -= item.quantity;
+            }
+
+        });
+
+
+        m.items =
+            newItems;
+
+        m.quantity =
+            newItems.reduce(
+                (sum, item) => sum + item.quantity,
+                0
+            );
+
+        m.totalPrice =
+            totalSale;
+
+    }
+
+    /* MOUVEMENT SIMPLE */
+
+    else {
+
+        let productId =
+            document.getElementById("editSingleProduct").value;
+
+        let unitPrice =
+            Number(document.getElementById("editSinglePrice").value);
+
+        let qty =
+            Number(document.getElementById("editSingleQuantity").value);
+
+        let p =
+            products.find(
+                product => product.id === productId
+            );
+
+        if(!p || qty < 1) {
+
+            /* Restaurer l'effet de l'ancien mouvement */
+
+            let oldP =
+                products.find(
+                    product => product.id === m.productId
+                );
+
+            if(oldP) {
+
+                if(m.type === "entrée") {
+                    oldP.quantity += m.quantity;
+                } else {
+                    oldP.quantity -= m.quantity;
+                }
+
+            }
+
+            return alert(
+                "Veuillez indiquer un produit et une quantité valides."
+            );
+
+        }
+
+
+        if(m.type === "sortie" && qty > p.quantity) {
+
+            let oldP =
+                products.find(
+                    product => product.id === m.productId
+                );
+
+            if(oldP) {
+                oldP.quantity -= m.quantity;
+            }
+
+            return alert(
+                "Stock insuffisant pour : " + p.name
+            );
+
+        }
+
+
+        if(m.type === "entrée") {
+            p.quantity += qty;
+        } else {
+            p.quantity -= qty;
+        }
+
+
+        m.productId =
+            productId;
+
+        m.quantity =
+            qty;
+
+        m.unitPrice =
+            unitPrice;
+
+        m.totalPrice =
+            qty * unitPrice;
+
+    }
+
+
+    m.invoiceNum =
+        newInvoiceNum || m.invoiceNum;
+
+    m.date =
+        new Date(newDateValue).toISOString();
+
+    m.party =
+        newParty || "Non spécifié";
+
+    m.reason =
+        newReason;
+
+
+    addJournal(
+        "Modification",
+        "Modification de la facture : " + m.invoiceNum
+    );
+
+
+    saveData();
+
+    invoiceEditMode =
+        false;
+
+    renderAll();
+
+    viewInvoice(m.id);
+
+}
+
+
+/* ==========================================
+   JOURNAL — AFFICHAGE
+========================================== */
+
+function renderJournal() {
+
+    let tbody =
+        document.getElementById(
+            "journalTable"
+        );
+
+
+    let search =
+        document.getElementById(
+            "journalSearch"
+        ).value
+        .toLowerCase()
+        .trim();
+
+
+    let actionFilter =
+        document.getElementById(
+            "journalActionFilter"
+        ).value;
+
+
+    let dateFrom =
+        document.getElementById(
+            "journalDateFrom"
+        ).value;
+
+
+    let dateTo =
+        document.getElementById(
+            "journalDateTo"
+        ).value;
+
+
+    tbody.innerHTML =
+        "";
+
+
+    let today =
+        new Date()
+        .toISOString()
+        .split("T")[0];
+
+
+    let todayCount =
+        0;
+
+
+    let users =
+        new Set();
+
+
+    userJournal.forEach(log => {
+
+        users.add(log.user);
+
+        let logDate =
+            new Date(log.date)
+            .toISOString()
+            .split("T")[0];
+
+
+        if(logDate === today) {
+            todayCount++;
+        }
+
+    });
+
+
+    document.getElementById("journalTotal")
+        .textContent =
+        userJournal.length;
+
+
+    document.getElementById("journalToday")
+        .textContent =
+        todayCount;
+
+
+    document.getElementById("journalUsers")
+        .textContent =
+        users.size;
+
+
+    /*
+       Du plus récent au plus ancien
+    */
+
+    [...userJournal]
+    .reverse()
+    .forEach(log => {
+
+        let date =
+            new Date(log.date);
+
+
+        let dateString =
+            date.toISOString()
+            .split("T")[0];
+
+
+        if(
+            dateFrom &&
+            dateString < dateFrom
+        ) {
+            return;
+        }
+
+
+        if(
+            dateTo &&
+            dateString > dateTo
+        ) {
+            return;
+        }
+
+
+        if(
+            actionFilter &&
+            log.action !== actionFilter
+        ) {
+            return;
+        }
+
+
+        let searchable =
+            (
+                log.user +
+                " " +
+                log.action +
+                " " +
+                log.detail
+            )
+            .toLowerCase();
+
+
+        if(
+            search &&
+            !searchable.includes(search)
+        ) {
+            return;
+        }
+
+
+        let badgeClass =
+            "action-systeme";
+
+
+        if(log.action === "Ajout") {
+            badgeClass = "action-ajout";
+        }
+
+        else if(log.action === "Modification") {
+            badgeClass = "action-modification";
+        }
+
+        else if(log.action === "Suppression") {
+            badgeClass = "action-suppression";
+        }
+
+        else if(log.action === "Stock") {
+            badgeClass = "action-stock";
+        }
+
+
+        tbody.innerHTML += `
+
+            <tr>
+
+                <td>
+                    ${date.toLocaleString("fr-FR")}
+                </td>
+
+                <td>
+
+                    <strong>
+                        👤 ${log.user}
+                    </strong>
+
+                </td>
+
+                <td>
+
+                    <span
+                        class="action-badge ${badgeClass}"
+                    >
+                        ${log.action}
+                    </span>
+
+                </td>
+
+                <td>
+                    ${log.detail}
+                </td>
+
+            </tr>
+
+        `;
+
+    });
+
+}
+
+
+/* ==========================================
+   RESET FILTRES JOURNAL
+========================================== */
+
+function resetJournalFilters() {
+
+    document.getElementById("journalSearch")
+        .value = "";
+
+    document.getElementById("journalActionFilter")
+        .value = "";
+
+    document.getElementById("journalDateFrom")
+        .value = "";
+
+    document.getElementById("journalDateTo")
+        .value = "";
+
+    renderJournal();
+
+}
+
+
+/* ==========================================
+   SUPPRIMER JOURNAL
+========================================== */
+
+function clearJournal() {
+
+    if(
+        !confirm(
+            "Voulez-vous vraiment supprimer tout le journal des utilisateurs ?"
+        )
+    ) {
+        return;
+    }
+
+
+    userJournal = [];
+
+
+    localStorage.setItem(
+        "stock_user_journal",
+        JSON.stringify(userJournal)
+    );
+
+
+    /*
+       On conserve une trace de l'action
+       de réinitialisation dans un nouveau journal.
+    */
+
+    addJournal(
+        "Système",
+        "Journal des utilisateurs réinitialisé"
+    );
+
+
+    renderJournal();
+
+}
+
+
+/* ==========================================
+   EXPORTER JOURNAL
+========================================== */
+
+function exportJournal() {
+
+    let blob =
+        new Blob(
+            [
+                JSON.stringify(
+                    userJournal,
+                    null,
+                    2
+                )
+            ],
+            {
+                type: "application/json"
+            }
+        );
+
+
+    let a =
+        document.createElement("a");
+
+
+    a.href =
+        URL.createObjectURL(blob);
+
+
+    a.download =
+        "journal_utilisateurs_stockpro.json";
+
+
+    a.click();
+
+
+    addJournal(
+        "Système",
+        "Exportation du journal des utilisateurs"
+    );
+
+}
+
+
+/* ==========================================
+   EXPORTER DONNÉES
+========================================== */
+
+function exportData() {
+
+    let data = {
+
+        products:
+            products,
+
+        movements:
+            movements,
+
+        suppliers:
+            suppliers,
+
+        userJournal:
+            userJournal
+
+    };
+
+
+    let blob =
+        new Blob(
+            [
+                JSON.stringify(
+                    data,
+                    null,
+                    2
+                )
+            ],
+            {
+                type: "application/json"
+            }
+        );
+
+
+    let a =
+        document.createElement("a");
+
+
+    a.href =
+        URL.createObjectURL(blob);
+
+
+    a.download =
+        "backup_stockpro.json";
+
+
+    a.click();
+
+
+    addJournal(
+        "Système",
+        "Exportation complète des données StockPro"
+    );
+
+}
+
+
+/* ==========================================
+   IMPORTER DONNÉES
+========================================== */
+
+function importData(e) {
+
+    let file =
+        e.target.files[0];
+
+
+    if(!file) return;
+
+
+    let reader =
+        new FileReader();
+
+
+    reader.onload =
+        function(evt) {
+
+            try {
+
+                let data =
+                    JSON.parse(
+                        evt.target.result
+                    );
+
+
+                products =
+                    data.products || [];
+
+
+                movements =
+                    data.movements || [];
+
+
+                suppliers =
+                    data.suppliers || [];
+
+
+                /*
+                   Importer le journal seulement
+                   s'il existe dans le backup.
+                */
+
+                if(
+                    Array.isArray(
+                        data.userJournal
+                    )
+                ) {
+
+                    userJournal =
+                        data.userJournal;
+
+                }
+
+
+                saveData();
+
+
+                addJournal(
+                    "Système",
+                    "Importation du fichier : " +
+                    file.name
+                );
+
+
+                renderAll();
+
+
+                alert(
+                    "Données importées avec succès."
+                );
+
+
+            } catch(error) {
+
+                alert(
+                    "Erreur : fichier JSON invalide."
+                );
+
+            }
+
+        };
+
+
+    reader.readAsText(file);
+
+}
+
+
+/* ==========================================
+   RÉINITIALISER
+========================================== */
+
+function resetData() {
+
+    if(
+        confirm(
+            "Supprimer toutes les données ? Cette action est irréversible."
+        )
+    ) {
+
+        /*
+           On garde le journal jusqu'au moment
+           où l'action est enregistrée.
+        */
+
+        addJournal(
+            "Système",
+            "Réinitialisation complète des données StockPro"
+        );
+
+
+        localStorage.removeItem(
+            "stock_products"
+        );
+
+        localStorage.removeItem(
+            "stock_movements"
+        );
+
+        localStorage.removeItem(
+            "stock_suppliers"
+        );
+
+
+        products = [];
+
+        movements = [];
+
+        suppliers = [];
+
+
+        /*
+           Le journal reste volontairement conservé.
+        */
+
+        saveData();
+
+        renderAll();
+
+    }
+
+}
+
+
+/* ==========================================
+   RENDER ALL
+========================================== */
+
+function renderAll() {
+
+    renderDashboard();
+
+    renderProducts();
+
+    renderHistory();
+
+    renderSuppliers();
+
+    renderJournal();
+
+}
+
+
+/* ==========================================
+   DATE
+========================================== */
+
+document.getElementById("currentDate")
+.textContent =
+    new Date()
+    .toLocaleDateString("fr-FR");
+
+
+/* ==========================================
+   UTILISATEUR ACTUEL
+========================================== */
+
+document.getElementById(
+    "currentUserDisplay"
+).textContent =
+    currentUser;
+
+
+/* ==========================================
+   PREMIER CHARGEMENT
+========================================== */
+
+renderAll();
+
+</script>
+
+</body>
+</html>
